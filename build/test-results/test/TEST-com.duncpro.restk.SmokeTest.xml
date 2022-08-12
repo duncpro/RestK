@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.duncpro.restk.SmokeTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2022-08-12T21:23:29" hostname="Duncans-MacBook-Pro.local" time="0.167">
+  <properties/>
+  <testcase name="can handle simple text request-response()" classname="com.duncpro.restk.SmokeTest" time="0.167"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

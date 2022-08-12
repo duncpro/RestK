@@ -1,65 +1,37 @@
 # RestK
-A small, typesafe, async, serverside REST framework for Kotlin.
+An extensible, typesafe, reflection-free, non-blocking, serverside REST framework for Kotlin.
 
-### Content Negotiation
-Serialization of responses is performed implicitly by the framework.
-All producable content types must be registered.
-```kotlin
-ProducableContentType(
-    contentType = "application/json",
-    // Response body objects which match this predicate
-    // are eligible for serialization to the given HTTP content
-    // type using the given serializer function.
-    matchKotlinType = { type.isDataClass() },
-    serialize = { Json.encode(it) },
-)
-```
-Deserialization of request bodies is performed implicitly by the framework.
-All acceptable content types must be registered.
-```kotlin
-AcceptableContentType(
-    contentType = "application/json",
-    // Request body objects which match this predicate
-    // are eligible for deserialization to the given HTTP 
-    // content type.
-    matchKotlinType = { type.isDataClass() },
-    deserializer = { Json.decode(it) }
-)
-```
+The entire codebase fits into a single reasonably sized file.
+You can get started with RestK in five minutes and master it in thirty.
+Contributions are always welcome.
 
-To avoid wasted computation, Content Negotiation is performed before the handler function
-is even invoked.
-
-### Endpoints
-Each `Endpoint` is created using the top-level `defineEndpoint` method.
+## Getting Started
+### Define an Endpoint
 ```kotlin
-val CreatePetRestEndpoint = endpointOf(POST, "/customers/{customerId}/pets/{petId}", 
-    consume = "application/json", produce = "application/json") {
+val PublishDocumentEndpoint = endpointOf(HttpMethod.POST, "/docs/{customerId}/docs/{docId}",
+    /* consumes = */ setOf("text/plain"), /* produces = */ setOf("text/html")) { request ->
+    val customerId = request.path("customerId").asString()
+    val docId = request.path("docId").asInt() /* throws RestException if not an integer */
+    val token = request.query("authToken").asLong() /* throws RestException if query arg not provided or not long */
+    val timestamp = request.query("timestamp").asLong() /* throws RestException if header value not provided or not long */
+     /* throws RestException if body not provided or not deserializable to String of charset) */
+    val docContents = request.body.asString()
     
-    val customerId = request.path["customerId"].asLong()
-    val petId = request.path["petId"].asLong()
-    val accessKey = request.query["accessKey"].asString()
-    val timestamp = request.header("timeout").asDate()
-    val account = authenticate(request)
-    val body = json.decode(request.body)
-    // TODO: Business Logic 
-
-    responseOf {
-        statusCode = 200
-        body = json.encode(MySerializableObj())
-        header("")
-    }
+    // TODO: Business Logic
+    return "<p>${docContents}</p>"
 }
 ```
-
-### Integration with Platform
-The `handleRequest` method will deserialize the given request, invoke the corresponding endpoint method,
-and serialize the response.
+### Handle a Request
 ```kotlin
-val response = handleRequest(
-    request = convertPlatformRequestToRestRequest(platformRequest),
-    producableContentTypes = listOf<ProducableContentType>(),
-    acceptableContentTypes = listOf<AcceptableContentType>(),
-    endpoints = setOf<Endpoint>(),
+val platformRequest = TODO("Choose a platform: AWS Lambda/API Gateway, Undertow, etc.")
+
+// This function is provided by RestK
+handleRequest(
+    method = HttpMethod.valueOf(platformRequest.method.uppercase()),
+    path = platformRequest.path, // String
+    query = platformRequest.query, // or parse query params yourself if not provided by platform
+    header = platformRequest.header, // Map<String, List<String>>
+    body = platformRequest.body, /* as ByteArray, or as Channel<ByteArray>, or null if bodiless */
+    router = routerOf(PublishDocumentEndpoint /*, ... */) // routerOf provided by RestK
 )
 ```
