@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.dokka") version "1.7.10"
     jacoco
     `maven-publish`
+    java
 }
 
 group = "com.duncpro.restk"
@@ -46,3 +47,11 @@ val jacocoTestReport by tasks.getting(JacocoReport::class) {
 
 java.sourceCompatibility = JavaVersion.VERSION_11
 java.targetCompatibility = JavaVersion.VERSION_11
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+}
