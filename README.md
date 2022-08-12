@@ -1,4 +1,8 @@
 # RestK
+[![Build Status](https://app.travis-ci.com/duncpro/RestK.svg?token=Hs9i7xHmw7XfVHT1kBUx&branch=master)](https://app.travis-ci.com/duncpro/RestK)
+[![](https://jitpack.io/v/duncpro/restk.svg)](https://jitpack.io/#duncpro/restk)
+
+
 An extensible, typesafe, reflection-free, non-blocking, serverside REST framework for Kotlin.
 
 The entire codebase fits into a single reasonably sized file.
