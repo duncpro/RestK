@@ -40,3 +40,6 @@ handleRequest(
     router = routerOf(PublishDocumentEndpoint /*, ... */) // routerOf provided by RestK
 )
 ```
+
+### Docs
+API Documentation for the master branch can be found [here](https://duncpro.github.io/RestK/-rest-k/com.duncpro.restk/index.html).
