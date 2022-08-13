@@ -55,8 +55,6 @@ suspend fun RequestBodyContainer.asString(charset: Charset = Charset.defaultChar
         this.asChannel()
             .consumeAsFlow()
             .toCollection(builder)
-    } catch (e: CancellationException) {
-        e.printStackTrace()
     } catch (e: IllegalArgumentException) {
         throw RestException(400, e)
     }
