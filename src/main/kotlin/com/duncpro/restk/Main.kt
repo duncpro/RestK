@@ -313,10 +313,10 @@ fun routerOf(vararg endpoints: RestEndpoint): Router<EndpointGroup> {
  * If a matching route is found (in terms of HTTP Verb and Path), but content negotiation fails,
  * a [RestResponse] HTTP 400 Bad Request will be returned. If the delegated [RequestHandler] ([RestEndpoint]) throws a
  * [RestException], an [RestResponse] with status code equal to [RestException.statusCode] will be returned. If any
- * other exception occurs, it will not be caught and will bubble up to the caller. Use [handleInMemoryRequest] instead,
- * if the HTTP server platform being used passes the request body as a [ByteArray] or [ByteBuffer] instead of a [Channel].
- * If the HTTP server platform being used is blocking, then [pipeFlowToOutputStream] and [consumeInputStreamAsChannel],
- * may be helpful.
+ * other exception occurs, it will not be caught and will bubble up to the caller.
+ * If the HTTP server platform being provides the request body in the form of a [ByteArray] or [ByteBuffer] use
+ * [handleInMemoryRequest] instead of this function. If the HTTP server platform being used is blocking,
+ * then [pipeFlowToOutputStream] and [consumeInputStreamAsChannel], may be helpful.
  */
 suspend fun handleRequest(
     method: HttpMethod,
