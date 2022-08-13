@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.duncpro.restk"
-version = "1.0-SNAPSHOT"
+version = "1.0-SNAPSHOT-1"
 
 repositories {
     mavenCentral()
@@ -15,10 +15,12 @@ repositories {
 }
 
 dependencies {
+    testImplementation("io.ktor:ktor-client-cio:2.1.0")
+    testImplementation("io.ktor:ktor-client-core-jvm:2.1.0")
+    api("com.duncpro:jroute:1.0-SNAPSHOT-7")
     testImplementation("org.slf4j:slf4j-simple:1.7.36")
     implementation("org.slf4j:slf4j-api:1.7.36")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
-    implementation("com.duncpro:jroute:1.0-SNAPSHOT-5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")

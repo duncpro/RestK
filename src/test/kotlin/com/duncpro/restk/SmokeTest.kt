@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.nio.ByteBuffer
 import java.time.Instant
 
 class SmokeTest {
@@ -32,7 +33,7 @@ class SmokeTest {
             }
         }
 
-        val response = handleRequest(
+        val response = handleInMemoryRequest(
             method = POST,
             path = "/users/wasd/docs/readme.md",
             query = emptyMap(),
@@ -41,7 +42,7 @@ class SmokeTest {
                 Pair("content-type", listOf("text/plain")),
                 Pair("accept", listOf("text/html"))
             ),
-            body = "Hello World!".toByteArray(),
+            body = ByteBuffer.wrap("Hello World!".toByteArray()),
             router = routerOf(endpoint)
         )
 
