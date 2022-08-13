@@ -1,26 +1,43 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
+$dokka.location:com.duncpro.restk.sun////PointingToDeclaration/-rest-k/com.duncpro.restk.sun/index.html
+$dokka.location:com.duncpro.restk.sun//SYSTEM_DEFAULT_BACKLOG/#/PointingToDeclaration/-rest-k/com.duncpro.restk.sun/-s-y-s-t-e-m_-d-e-f-a-u-l-t_-b-a-c-k-l-o-g.html
+$dokka.location:com.duncpro.restk.sun//consumeInputStreamAsChannel/kotlinx.coroutines.CoroutineScope#java.io.InputStream/PointingToDeclaration/-rest-k/com.duncpro.restk.sun/consume-input-stream-as-channel.html
+$dokka.location:com.duncpro.restk.sun//httpServerOf/#com.duncpro.jroute.router.Router[com.duncpro.restk.EndpointGroup]#java.net.InetSocketAddress?#kotlin.Int/PointingToDeclaration/-rest-k/com.duncpro.restk.sun/http-server-of.html
+$dokka.location:com.duncpro.restk.sun//pipeFlowToOutputStream/#kotlinx.coroutines.flow.Flow[kotlin.Byte]#java.io.OutputStream/PointingToDeclaration/-rest-k/com.duncpro.restk.sun/pipe-flow-to-output-stream.html
 $dokka.location:com.duncpro.restk////PointingToDeclaration/-rest-k/com.duncpro.restk/index.html
 $dokka.location:com.duncpro.restk//asBoolean/com.duncpro.restk.RestStringFieldValueReference#/PointingToDeclaration/-rest-k/com.duncpro.restk/as-boolean.html
-$dokka.location:com.duncpro.restk//asChannel/com.duncpro.restk.ResponseBodyContainer#/PointingToDeclaration/-rest-k/com.duncpro.restk/as-channel.html
+$dokka.location:com.duncpro.restk//asChannel/com.duncpro.restk.RequestBodyContainer#/PointingToDeclaration/-rest-k/com.duncpro.restk/as-channel.html
 $dokka.location:com.duncpro.restk//asDouble/com.duncpro.restk.RestStringFieldValueReference#/PointingToDeclaration/-rest-k/com.duncpro.restk/as-double.html
 $dokka.location:com.duncpro.restk//asInt/com.duncpro.restk.RestStringFieldValueReference#/PointingToDeclaration/-rest-k/com.duncpro.restk/as-int.html
 $dokka.location:com.duncpro.restk//asLong/com.duncpro.restk.RestStringFieldValueReference#/PointingToDeclaration/-rest-k/com.duncpro.restk/as-long.html
-$dokka.location:com.duncpro.restk//asString/com.duncpro.restk.ResponseBodyContainer#java.nio.charset.Charset/PointingToDeclaration/-rest-k/com.duncpro.restk/as-string.html
+$dokka.location:com.duncpro.restk//asString/com.duncpro.restk.RequestBodyContainer#java.nio.charset.Charset/PointingToDeclaration/-rest-k/com.duncpro.restk/as-string.html
 $dokka.location:com.duncpro.restk//asString/com.duncpro.restk.RestStringFieldValueReference#/PointingToDeclaration/-rest-k/com.duncpro.restk/as-string.html
-$dokka.location:com.duncpro.restk//body/com.duncpro.restk.ResponseBuilderContext#kotlin.String/PointingToDeclaration/-rest-k/com.duncpro.restk/body.html
+$dokka.location:com.duncpro.restk//body/com.duncpro.restk.ResponseBuilderContext#kotlin.String#java.nio.charset.Charset/PointingToDeclaration/-rest-k/com.duncpro.restk/body.html
 $dokka.location:com.duncpro.restk//endpointOf/#com.duncpro.jroute.HttpMethod#kotlin.String#kotlin.collections.Set[kotlin.String]#kotlin.collections.Set[kotlin.String]#kotlin.coroutines.SuspendFunction1[com.duncpro.restk.RestRequest,com.duncpro.restk.RestResponse]/PointingToDeclaration/-rest-k/com.duncpro.restk/endpoint-of.html
-$dokka.location:com.duncpro.restk//handleRequest/#com.duncpro.jroute.HttpMethod#kotlin.String#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#kotlin.ByteArray?#com.duncpro.jroute.router.Router[com.duncpro.restk.EndpointGroup]/PointingToDeclaration/-rest-k/com.duncpro.restk/handle-request.html
-$dokka.location:com.duncpro.restk//handleRequest/#com.duncpro.jroute.HttpMethod#kotlin.String#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#kotlinx.coroutines.channels.Channel[kotlin.ByteArray]?#com.duncpro.jroute.router.Router[com.duncpro.restk.EndpointGroup]/PointingToDeclaration/-rest-k/com.duncpro.restk/handle-request.html
-$dokka.location:com.duncpro.restk//header/com.duncpro.restk.ResponseBuilderContext#kotlin.String#kotlin.Any/PointingToDeclaration/-rest-k/com.duncpro.restk/header.html
+$dokka.location:com.duncpro.restk//handleInMemoryRequest/#com.duncpro.jroute.HttpMethod#kotlin.String#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#java.nio.ByteBuffer?#com.duncpro.jroute.router.Router[com.duncpro.restk.EndpointGroup]/PointingToDeclaration/-rest-k/com.duncpro.restk/handle-in-memory-request.html
+$dokka.location:com.duncpro.restk//handleRequest/#com.duncpro.jroute.HttpMethod#kotlin.String#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#kotlinx.coroutines.channels.Channel[kotlin.Byte]?#com.duncpro.jroute.router.Router[com.duncpro.restk.EndpointGroup]/PointingToDeclaration/-rest-k/com.duncpro.restk/handle-request.html
+$dokka.location:com.duncpro.restk//header/com.duncpro.restk.ResponseBuilderContext#kotlin.String#kotlin.Boolean/PointingToDeclaration/-rest-k/com.duncpro.restk/header.html
+$dokka.location:com.duncpro.restk//header/com.duncpro.restk.ResponseBuilderContext#kotlin.String#kotlin.Double/PointingToDeclaration/-rest-k/com.duncpro.restk/header.html
+$dokka.location:com.duncpro.restk//header/com.duncpro.restk.ResponseBuilderContext#kotlin.String#kotlin.Int/PointingToDeclaration/-rest-k/com.duncpro.restk/header.html
+$dokka.location:com.duncpro.restk//header/com.duncpro.restk.ResponseBuilderContext#kotlin.String#kotlin.Long/PointingToDeclaration/-rest-k/com.duncpro.restk/header.html
+$dokka.location:com.duncpro.restk//header/com.duncpro.restk.ResponseBuilderContext#kotlin.String#kotlin.String/PointingToDeclaration/-rest-k/com.duncpro.restk/header.html
 $dokka.location:com.duncpro.restk//header/com.duncpro.restk.RestRequest#kotlin.String/PointingToDeclaration/-rest-k/com.duncpro.restk/header.html
+$dokka.location:com.duncpro.restk//parseQueryParams/#kotlin.String?/PointingToDeclaration/-rest-k/com.duncpro.restk/parse-query-params.html
 $dokka.location:com.duncpro.restk//path/com.duncpro.restk.RestRequest#kotlin.String/PointingToDeclaration/-rest-k/com.duncpro.restk/path.html
 $dokka.location:com.duncpro.restk//query/com.duncpro.restk.RestRequest#kotlin.String/PointingToDeclaration/-rest-k/com.duncpro.restk/query.html
 $dokka.location:com.duncpro.restk//responseOf/#kotlin.Function1[com.duncpro.restk.ResponseBuilderContext,kotlin.Unit]/PointingToDeclaration/-rest-k/com.duncpro.restk/response-of.html
 $dokka.location:com.duncpro.restk//routerOf/#kotlin.Array[com.duncpro.restk.RestEndpoint]/PointingToDeclaration/-rest-k/com.duncpro.restk/router-of.html
 $dokka.location:com.duncpro.restk/EndpointGroup///PointingToDeclaration/-rest-k/com.duncpro.restk/-endpoint-group/index.html
+$dokka.location:com.duncpro.restk/RequestBodyContainer///PointingToDeclaration/-rest-k/com.duncpro.restk/-request-body-container/index.html
+$dokka.location:com.duncpro.restk/RequestBodyContainer/bodyChannel/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-request-body-container/body-channel.html
+$dokka.location:com.duncpro.restk/ResponseBodyContainer.AutoChunkedResponseBodyContainer///PointingToDeclaration/-rest-k/com.duncpro.restk/-response-body-container/-auto-chunked-response-body-container/index.html
+$dokka.location:com.duncpro.restk/ResponseBodyContainer.AutoChunkedResponseBodyContainer/AutoChunkedResponseBodyContainer/#kotlinx.coroutines.flow.Flow[kotlin.Byte]/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-body-container/-auto-chunked-response-body-container/-auto-chunked-response-body-container.html
+$dokka.location:com.duncpro.restk/ResponseBodyContainer.FullResponseBodyContainer///PointingToDeclaration/-rest-k/com.duncpro.restk/-response-body-container/-full-response-body-container/index.html
+$dokka.location:com.duncpro.restk/ResponseBodyContainer.FullResponseBodyContainer/FullResponseBodyContainer/#kotlinx.coroutines.flow.Flow[kotlin.Byte]#kotlin.Long/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-body-container/-full-response-body-container/-full-response-body-container.html
+$dokka.location:com.duncpro.restk/ResponseBodyContainer.FullResponseBodyContainer/contentLength/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-body-container/-full-response-body-container/content-length.html
 $dokka.location:com.duncpro.restk/ResponseBodyContainer///PointingToDeclaration/-rest-k/com.duncpro.restk/-response-body-container/index.html
-$dokka.location:com.duncpro.restk/ResponseBodyContainer/bodyChannel/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-body-container/body-channel.html
+$dokka.location:com.duncpro.restk/ResponseBodyContainer/data/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-body-container/data.html
 $dokka.location:com.duncpro.restk/ResponseBuilderContext///PointingToDeclaration/-rest-k/com.duncpro.restk/-response-builder-context/index.html
 $dokka.location:com.duncpro.restk/ResponseBuilderContext/body/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-builder-context/body.html
 $dokka.location:com.duncpro.restk/ResponseBuilderContext/header/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-builder-context/header.html
@@ -52,4 +69,5 @@ $dokka.location:com.duncpro.restk/RestStringFieldValueReference/name/#/PointingT
 $dokka.location:com.duncpro.restk/RestStringFieldValueReference/type/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-string-field-value-reference/type.html
 $dokka.location:com.duncpro.restk/RestStringFieldValueReference/value/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-string-field-value-reference/value.html
 com.duncpro.restk
+com.duncpro.restk.sun
 
