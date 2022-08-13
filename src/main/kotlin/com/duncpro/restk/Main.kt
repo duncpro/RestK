@@ -32,7 +32,7 @@ private val logger: Logger = LoggerFactory.getLogger("com.duncpro.restk")
 class RestException(val statusCode: Int = 400, cause: Throwable? = null, message: String? = null): Exception(message, cause)
 
 /**
- * [RequestBodyContainer] servers as an extension-point for body deserialization methods.
+ * [RequestBodyContainer] serves as an extension-point for body deserialization methods.
  * When using custom data formats, consider creating an extension method on this class which
  * deserializes the response body. For an example implementation see [RequestBodyContainer.asString].
  */
