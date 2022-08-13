@@ -2,25 +2,15 @@ package com.duncpro.restk.sun
 
 import com.duncpro.jroute.HttpMethod
 import com.duncpro.jroute.router.Router
-import com.duncpro.restk.EndpointGroup
-import com.duncpro.restk.ResponseBodyContainer
+import com.duncpro.restk.*
 import com.duncpro.restk.ResponseBodyContainer.AutoChunkedResponseBodyContainer
 import com.duncpro.restk.ResponseBodyContainer.FullResponseBodyContainer
-import com.duncpro.restk.handleRequest
-import com.duncpro.restk.parseQueryParams
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consume
-import kotlinx.coroutines.flow.*
-import java.io.InputStream
-import java.io.OutputStream
 import java.net.InetSocketAddress
 import java.util.*
 import java.util.Collections.emptyList
-import java.util.stream.Collectors
-import java.util.stream.Stream
 
 const val SYSTEM_DEFAULT_BACKLOG = -1
 
@@ -40,28 +30,6 @@ private val HttpExchange.hasRequestBody: Boolean get() {
     if (this.requestContentLength == null) return isRequestBodyChunked
     if (this.requestContentLength != 0) return true
     return false
-}
-
-fun CoroutineScope.consumeInputStreamAsChannel(inputStream: InputStream): Channel<Byte> {
-    val channel = Channel<Byte>(Channel.UNLIMITED)
-    val pipeJob = launch(Dispatchers.IO) {
-        inputStream.use {
-            var b: Int
-            do {
-                b = inputStream.read()
-                if (b != -1) channel.send(b.toByte())
-            } while (b != -1)
-        }
-    }
-    pipeJob.invokeOnCompletion(channel::close)
-    return channel
-}
-
-suspend fun pipeFlowToOutputStream(flow: Flow<Byte>, outputStream: OutputStream) {
-    flow
-        .onEach { withContext(Dispatchers.IO) { outputStream.write(it.toInt()) } }
-        .onCompletion { withContext(Dispatchers.IO) { outputStream.close() } }
-        .collect()
 }
 
 /**
