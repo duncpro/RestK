@@ -362,11 +362,12 @@ suspend fun handleInMemoryRequest(
 ): RestResponse = coroutineScope {
     if (body == null) return@coroutineScope handleRequest(method, path, query, header, null, router)
     val bodyChannel = Channel<Byte>(body.limit())
-    launch {
+    val writeToChannelJob = launch {
         while (body.hasRemaining()) {
             bodyChannel.send(body.get())
         }
     }
+    writeToChannelJob.invokeOnCompletion(bodyChannel::close)
     return@coroutineScope handleRequest(method, path, query, header, bodyChannel, router)
 }
 

@@ -53,7 +53,7 @@ fun CoroutineScope.consumeInputStreamAsChannel(inputStream: InputStream): Channe
             } while (b != -1)
         }
     }
-    pipeJob.invokeOnCompletion { channel.close() }
+    pipeJob.invokeOnCompletion(channel::close)
     return channel
 }
 
