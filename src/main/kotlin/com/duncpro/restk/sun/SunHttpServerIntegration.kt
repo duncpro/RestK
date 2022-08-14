@@ -8,9 +8,12 @@ import com.duncpro.restk.ResponseBodyContainer.FullResponseBodyContainer
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.*
+import org.slf4j.LoggerFactory
 import java.net.InetSocketAddress
 import java.util.*
 import java.util.Collections.emptyList
+
+private val logger = LoggerFactory.getLogger("com.duncpro.restk.SunHttpServerIntegrationKt")
 
 const val SYSTEM_DEFAULT_BACKLOG = -1
 
@@ -45,27 +48,31 @@ fun httpServerOf(router: RestRouter<EndpointGroup>, address: InetSocketAddress? 
     httpServer.executor = Dispatchers.IO.asExecutor()
 
     httpServer.createContext("/") { exchange ->
-        runBlocking {
-            val response = handleRequest(
-                method = HttpMethod.valueOf(exchange.requestMethod.uppercase()),
-                path = exchange.requestURI.path,
-                query = parseQueryParams(exchange.requestURI.query),
-                header = exchange.requestHeaders,
-                body = when (exchange.hasRequestBody) {
-                    true -> BlockingRequestBodyContainer(exchange.requestBody)
-                    false -> EmptyRequestBodyContainer
-                },
-                router
-            )
+        try {
+            runBlocking {
+                val response = handleRequest(
+                    method = HttpMethod.valueOf(exchange.requestMethod.uppercase()),
+                    path = exchange.requestURI.path,
+                    query = parseQueryParams(exchange.requestURI.query),
+                    header = exchange.requestHeaders,
+                    body = when (exchange.hasRequestBody) {
+                        true -> BlockingRequestBodyContainer(exchange.requestBody)
+                        false -> EmptyRequestBodyContainer
+                    },
+                    router
+                )
 
-            val contentLength = when (response.body) {
-                is AutoChunkedResponseBodyContainer -> 0L
-                is FullResponseBodyContainer -> response.body.contentLength
-                null -> -1L
+                val contentLength = when (response.body) {
+                    is AutoChunkedResponseBodyContainer -> 0L
+                    is FullResponseBodyContainer -> response.body.contentLength
+                    null -> -1L
+                }
+                exchange.sendResponseHeaders(response.statusCode, contentLength)
+                if (response.body != null) pipeFlowToOutputStream(response.body.data, exchange.responseBody)
+                exchange.close()
             }
-            exchange.sendResponseHeaders(response.statusCode, contentLength)
-            if (response.body != null) pipeFlowToOutputStream(response.body.data, exchange.responseBody)
-            exchange.close()
+        } catch (e: Exception) {
+            logger.error("Unhandled exception occurred while processing request", e)
         }
     }
 
