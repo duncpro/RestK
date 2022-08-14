@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import java.io.InputStream
 import java.lang.ArithmeticException
+import java.lang.RuntimeException
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 
@@ -394,9 +395,6 @@ suspend fun handleRequest(
         .map { headerValue -> headerValue.trim().lowercase() }
         .toSet()
 
-
-
-
     val capableConsumerEndpoints = endpointGroup.likeEndpoints
         .filter { endpoint ->
             (endpoint.consumeContentType.isEmpty() && requestBodyType == null)
@@ -418,7 +416,6 @@ suspend fun handleRequest(
         logger.info("Unable to process request because the accept header does not contain any supported media types.")
         return RestResponse(406, emptyMap(), null)
     }
-
 
     val request = RestRequest(endpointGroup.position.route.extractVariablesMap(Path(path)), query,
         sanitizedHeader, body)

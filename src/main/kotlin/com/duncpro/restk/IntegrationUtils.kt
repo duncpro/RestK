@@ -4,6 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.io.OutputStream
+import java.lang.ArithmeticException
+import java.lang.RuntimeException
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
@@ -27,4 +29,17 @@ suspend fun pipeFlowToOutputStream(flow: Flow<Byte>, outputStream: OutputStream)
         .onEach { withContext(Dispatchers.IO) { outputStream.write(it.toInt()) } }
         .onCompletion { withContext(Dispatchers.IO) { outputStream.close() } }
         .collect()
+}
+
+suspend fun ResponseBodyContainer.collect(): ByteArray = when (this) {
+    is ResponseBodyContainer.AutoChunkedResponseBodyContainer ->  this.data.toCollection(ArrayList()).toByteArray()
+    is ResponseBodyContainer.FullResponseBodyContainer -> {
+        val buffer = ByteArray(try {
+            Math.toIntExact(this.contentLength)
+        } catch (e: ArithmeticException) {
+            throw RuntimeException("Cannot collect response body to single ByteArray because it is too big.", e)
+        })
+        this.data.collectIndexed { index, value -> buffer[index] = value }
+        buffer
+    }
 }
