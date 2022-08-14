@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.duncpro.restk"
-version = "1.0-SNAPSHOT-7"
+version = "1.0-SNAPSHOT-8"
 
 repositories {
     mavenCentral()

@@ -256,7 +256,7 @@ fun responseOf(builder: ResponseBuilderContext.() -> Unit): RestResponse {
 
 typealias RequestHandler = suspend (RestRequest) -> RestResponse
 
-class RestEndpoint internal constructor(
+class RestEndpoint constructor(
     val method: HttpMethod,
     val route: String,
     val consumeContentType: Set<String>,
