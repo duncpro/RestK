@@ -612,11 +612,10 @@ a small {
 }
 
 blockquote {
-    border-left: 1ch solid var(--default-gray);
+    border-left: 1px solid #e5e5e5;
     margin: 0;
-    padding-left: 1ch;
+    padding: 0 0 0 20px;
     font-style: italic;
-    color: var(--average-color);
 }
 
 pre {
