@@ -31,7 +31,7 @@ if(savedDarkMode === true){
             </a>
     </div>
     <div>
-1.0-SNAPSHOT-8    </div>
+1.0-SNAPSHOT-9    </div>
     <div class="pull-right d-flex">
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
         <div id="searchBar"></div>
@@ -46,40 +46,101 @@ if(savedDarkMode === true){
   <div class="breadcrumbs"><a href="../../../index.html">RestK</a><span class="delimiter">/</span><a href="../index.html">com.duncpro.restk</a><span class="delimiter">/</span><a href="index.html">RequestBodyContainer</a></div>
   <div class="cover ">
     <h1 class="cover"><span>Request</span><wbr></wbr><span>Body</span><wbr></wbr><span><span>Container</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">RequestBodyContainer</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph"><a href="index.html">RequestBodyContainer</a> serves as an extension-point for body deserialization methods. When using custom data formats, consider creating an extension method on this class which deserializes the response body. For an example implementation see <a href="../as-string.html">RequestBodyContainer.asString</a>.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">RequestBodyContainer</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph"><a href="index.html">RequestBodyContainer</a> serves as an extension-point for body deserialization methods. When using custom data formats, consider creating an extension method on this class which deserializes the response body. For an example implementation see <a href="../as-string.html">RequestBodyContainer.asString</a>.</p></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Properties">Properties</button><button class="section-tab" data-togglable="Extensions">Extensions</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Extensions">Extensions</button><button class="section-tab" data-togglable="Inheritors">Inheritors</button></div>
     <div class="tabs-section-body">
-      <h2 class="">Properties</h2>
-      <div class="table" data-togglable="Properties"><a data-name="-1203148209%2FProperties%2F769193423" anchor-label="bodyChannel" id="-1203148209%2FProperties%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="-800168528%2FFunctions%2F769193423" anchor-label="asByteBuffer" id="-800168528%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
         <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="body-channel.html"><span>body</span><wbr></wbr><span><span>Channel</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1203148209%2FProperties%2F769193423"></span>
+                <div><a href="as-byte-buffer.html"><span>as</span><wbr></wbr><span>Byte</span><wbr></wbr><span><span>Buffer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-800168528%2FFunctions%2F769193423"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/main"><a data-name="-1203148209%2FProperties%2F769193423" anchor-label="bodyChannel" id="-1203148209%2FProperties%2F769193423" data-filterable-set=":dokkaHtml/main"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="body-channel.html">bodyChannel</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.channels/Channel///PointingToDeclaration/">Channel</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte/index.html">Byte</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="as-byte-buffer.html"><span class="token function">asByteBuffer</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html">ByteBuffer</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-34837782%2FFunctions%2F769193423" anchor-label="asFlow" id="-34837782%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="as-flow.html"><span>as</span><wbr></wbr><span><span>Flow</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-34837782%2FFunctions%2F769193423"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="as-flow.html"><span class="token function">asFlow</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte/index.html">Byte</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <h2 class="tabbedcontent">Extensions</h2>
-      <div class="table" data-togglable="Extensions"><a data-name="644815594%2FExtensions%2F769193423" anchor-label="asChannel" id="644815594%2FExtensions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+      <h2 class="">Inheritors</h2>
+      <div class="table" data-togglable="Inheritors"><a data-name="2076079476%2FInheritors%2F769193423" anchor-label="MemoryRequestBodyContainer" id="2076079476%2FInheritors%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
         <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="../as-channel.html"><span>as</span><wbr></wbr><span><span>Channel</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="644815594%2FExtensions%2F769193423"></span>
+                <div><a href="../-memory-request-body-container/index.html">MemoryRequestBodyContainer</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2076079476%2FInheritors%2F769193423"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div></div>
+          </div>
+        </div>
+<a data-name="-752567488%2FInheritors%2F769193423" anchor-label="EmptyRequestBodyContainer" id="-752567488%2FInheritors%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-empty-request-body-container/index.html">EmptyRequestBodyContainer</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-752567488%2FInheritors%2F769193423"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div></div>
+          </div>
+        </div>
+<a data-name="1622433393%2FInheritors%2F769193423" anchor-label="AsyncRequestBodyContainer" id="1622433393%2FInheritors%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-async-request-body-container/index.html">AsyncRequestBodyContainer</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1622433393%2FInheritors%2F769193423"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div></div>
+          </div>
+        </div>
+<a data-name="1569512896%2FInheritors%2F769193423" anchor-label="BlockingRequestBodyContainer" id="1569512896%2FInheritors%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-blocking-request-body-container/index.html">BlockingRequestBodyContainer</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1569512896%2FInheritors%2F769193423"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div></div>
+          </div>
+        </div>
+      </div>
+      <h2 class="tabbedcontent">Extensions</h2>
+      <div class="table" data-togglable="Extensions"><a data-name="2074268348%2FExtensions%2F769193423" anchor-label="asByteArray" id="2074268348%2FExtensions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../as-byte-array.html"><span>as</span><wbr></wbr><span>Byte</span><wbr></wbr><span><span>Array</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2074268348%2FExtensions%2F769193423"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html">RequestBodyContainer</a><span class="token punctuation">.</span><a href="../as-channel.html"><span class="token function">asChannel</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.channels/Channel///PointingToDeclaration/">Channel</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte/index.html">Byte</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="index.html">RequestBodyContainer</a><span class="token punctuation">.</span><a href="../as-byte-array.html"><span class="token function">asByteArray</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
               </div>
             </div>
           </div>
