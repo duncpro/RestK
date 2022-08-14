@@ -43,6 +43,7 @@ $dokka.location:com.duncpro.restk/ResponseBuilderContext/body/#/PointingToDeclar
 $dokka.location:com.duncpro.restk/ResponseBuilderContext/header/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-builder-context/header.html
 $dokka.location:com.duncpro.restk/ResponseBuilderContext/statusCode/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-builder-context/status-code.html
 $dokka.location:com.duncpro.restk/RestEndpoint///PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/index.html
+$dokka.location:com.duncpro.restk/RestEndpoint/RestEndpoint/#com.duncpro.jroute.rest.HttpMethod#kotlin.String#kotlin.collections.Set[kotlin.String]#kotlin.collections.Set[kotlin.String]#kotlin.coroutines.SuspendFunction1[com.duncpro.restk.RestRequest,com.duncpro.restk.RestResponse]/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/-rest-endpoint.html
 $dokka.location:com.duncpro.restk/RestEndpoint/consumeContentType/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/consume-content-type.html
 $dokka.location:com.duncpro.restk/RestEndpoint/handler/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/handler.html
 $dokka.location:com.duncpro.restk/RestEndpoint/method/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/method.html
