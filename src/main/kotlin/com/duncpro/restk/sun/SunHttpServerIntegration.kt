@@ -62,6 +62,8 @@ fun httpServerOf(router: RestRouter<EndpointGroup>, address: InetSocketAddress? 
                     router
                 )
 
+                exchange.responseHeaders.putAll(response.header)
+
                 val contentLength = when (response.body) {
                     is AutoChunkedResponseBodyContainer -> 0L
                     is FullResponseBodyContainer -> response.body.contentLength
