@@ -1,14 +1,12 @@
 package com.duncpro.restk
 
-import com.duncpro.jroute.HttpMethod
+import com.duncpro.jroute.rest.HttpMethod
 import com.duncpro.jroute.Path
-import com.duncpro.jroute.route.ParameterizedRoute
-import com.duncpro.jroute.route.Route
+import com.duncpro.jroute.rest.RestRouteResult
+import com.duncpro.jroute.rest.RestRouter
+import com.duncpro.jroute.util.ParameterizedRoute
 import com.duncpro.jroute.router.Router
-import com.duncpro.jroute.router.RouterResult
-import com.duncpro.jroute.router.TreeRouter
 import com.duncpro.restk.ResponseBodyContainer.FullResponseBodyContainer
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
@@ -297,12 +295,12 @@ class EndpointGroup internal constructor(
  * should be passed to [handleRequest] or [handleInMemoryRequest] along with the details
  * of the inbound request.
  */
-fun routerOf(vararg endpoints: RestEndpoint): Router<EndpointGroup> {
-    val router = TreeRouter<EndpointGroup>()
+fun routerOf(vararg endpoints: RestEndpoint): RestRouter<EndpointGroup> {
+    val router = RestRouter<EndpointGroup>()
     endpoints
         .groupBy { EndpointPosition(it.method, ParameterizedRoute.parse(it.route)) }
         .map { (position, likeEndpoints) -> EndpointGroup(position, likeEndpoints.toSet()) }
-        .forEach { endpointGroup -> router.addRoute(endpointGroup.position.method, endpointGroup.position.route,
+        .forEach { endpointGroup -> router.add(endpointGroup.position.method, endpointGroup.position.route,
             endpointGroup) }
     return router
 }
@@ -324,9 +322,15 @@ suspend fun handleRequest(
     query: Map<String, List<String>>,
     header: Map<String, List<String>>,
     body: Channel<Byte>?,
-    router: Router<EndpointGroup>
+    router: RestRouter<EndpointGroup>
 ): RestResponse {
-    val (_, endpointGroup) = router.route(method, path).orElse(null) ?: return RestResponse(404, emptyMap(), null)
+    val endpointGroup = when (val result = router.route(method, path)) {
+        is RestRouteResult.ResourceNotFound<EndpointGroup> -> { return RestResponse(404, emptyMap(), null) }
+        is RestRouteResult.UnsupportedMethod<EndpointGroup> -> { return RestResponse(405, emptyMap(), null) }
+        is RestRouteResult.RestRouteMatch<EndpointGroup> -> result.endpoint
+        else -> throw AssertionError()
+    }
+
     val sanitizedHeader = header.mapKeys { entry -> entry.key.lowercase() }
     val requestBodyType: String? = sanitizedHeader["content-type"]?.firstOrNull()?.lowercase()
     val acceptableResponseBodyTypes: Set<String> = (sanitizedHeader["accept"] ?: emptyList()).asSequence()
@@ -372,7 +376,7 @@ suspend fun handleInMemoryRequest(
     query: Map<String, List<String>>,
     header: Map<String, List<String>>,
     body: ByteBuffer?,
-    router: Router<EndpointGroup>
+    router: RestRouter<EndpointGroup>
 ): RestResponse = coroutineScope {
     if (body == null) return@coroutineScope handleRequest(method, path, query, header, null, router)
     val bodyChannel = Channel<Byte>(body.limit())
@@ -384,7 +388,3 @@ suspend fun handleInMemoryRequest(
     writeToChannelJob.invokeOnCompletion(bodyChannel::close)
     return@coroutineScope handleRequest(method, path, query, header, bodyChannel, router)
 }
-
-internal operator fun <T> RouterResult<T>.component1(): Route = this.route
-internal operator fun <T> RouterResult<T>.component2(): T = this.endpoint
-

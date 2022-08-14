@@ -1,6 +1,6 @@
 package com.duncpro.restk
 
-import com.duncpro.jroute.HttpMethod.POST
+import com.duncpro.jroute.rest.HttpMethod.POST
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

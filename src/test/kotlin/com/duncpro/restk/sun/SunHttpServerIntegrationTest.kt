@@ -1,6 +1,6 @@
 package com.duncpro.restk.sun
 
-import com.duncpro.jroute.HttpMethod
+import com.duncpro.jroute.rest.HttpMethod
 import com.duncpro.restk.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
