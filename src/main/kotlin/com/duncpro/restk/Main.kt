@@ -339,14 +339,30 @@ suspend fun handleRequest(
         .toSet()
 
 
-    val matchingEndpoint = endpointGroup.likeEndpoints
+
+
+    val capableConsumerEndpoints = endpointGroup.likeEndpoints
         .filter { endpoint ->
             (endpoint.consumeContentType.isEmpty() && requestBodyType == null)
                     || endpoint.consumeContentType.map(String::lowercase).contains(requestBodyType)
         }
+
+    if (capableConsumerEndpoints.isEmpty()) {
+       logger.info("Unable to process request because the request payload contains an unsupported media type: " +
+               "${requestBodyType ?: "No Content"}.")
+        return RestResponse(415, emptyMap(), null)
+    }
+
+
+    val matchedEndpoint = capableConsumerEndpoints
         .firstOrNull { endpoint -> (endpoint.produceContentType.isEmpty() && acceptableResponseBodyTypes.isEmpty())
                 || (endpoint.produceContentType.map(String::lowercase) intersect acceptableResponseBodyTypes).isNotEmpty() }
-        ?: return RestResponse(400, emptyMap(), null) // TODO: More specialized error response
+
+    if (matchedEndpoint == null) {
+        logger.info("Unable to process request because the accept header does not contain any supported media types.")
+        return RestResponse(406, emptyMap(), null)
+    }
+
 
     val request = RestRequest(
         path = endpointGroup.position.route.extractVariablesMap(Path(path)),
@@ -356,12 +372,12 @@ suspend fun handleRequest(
     )
 
     return try {
-        var response = matchingEndpoint.handler(request)
+        var response = matchedEndpoint.handler(request)
         // Add implicits
         // Automatically set response content-type header if possible
-        if (matchingEndpoint.produceContentType.size == 1 && response.body != null) {
+        if (matchedEndpoint.produceContentType.size == 1 && response.body != null) {
             response = response.copy(header = response.header + Pair("content-type",
-                listOf(matchingEndpoint.produceContentType.first())))
+                listOf(matchedEndpoint.produceContentType.first())))
         }
         return response
     } catch (e: RestException) {
