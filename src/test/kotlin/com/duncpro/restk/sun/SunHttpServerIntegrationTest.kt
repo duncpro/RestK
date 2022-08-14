@@ -21,8 +21,9 @@ class SunHttpServerIntegrationTest {
 
     @Test
     fun `can handle requests`() {
-        val GreetingEndpoint = endpointOf(HttpMethod.POST, "/greeting",
-            consumes = setOf("text/plain; charset=UTF-8"), produces = setOf("text/plain; charset=UTF-8")) { request ->
+        val GreetingEndpoint = RestEndpoint(HttpMethod.POST, "/greeting", setOf("text/plain; charset=UTF-8"),
+            setOf("text/plain; charset=UTF-8")) { request ->
+
             val user = request.query("user").asString()
             val echo = request.body.asString()
             responseOf {

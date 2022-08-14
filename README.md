@@ -23,7 +23,7 @@ like Netty or Ktor.
 ## Getting Started
 ### Define an Endpoint
 ```kotlin
-val PublishDocumentEndpoint = endpointOf(HttpMethod.POST, "/docs/{customerId}/docs/{docId}",
+val PublishDocumentEndpoint = RestEndpoint(HttpMethod.POST, "/docs/{customerId}/docs/{docId}",
     /* consumes = */ setOf("text/plain; charset=utf-8"), /* produces = */ setOf("text/html; charset-utf-8")) { request ->
     val customerId = request.path("customerId").asString()
     val docId = request.path("docId").asInt() /* throws RestException if not an integer */
@@ -32,7 +32,7 @@ val PublishDocumentEndpoint = endpointOf(HttpMethod.POST, "/docs/{customerId}/do
      /* throws RestException if body not provided or not deserializable to String of charset) */
     val docContents = request.body.asString()
     // TODO: Business Logic
-    return@endpointOf responseOf {
+    responseOf {
         statusCode = 201 // by default 200
         body("<p>${docContents}</p>", Charsets.UTF_8)
     }

@@ -17,7 +17,8 @@ class SmokeTest {
 
     @Test
     fun `can handle simple text request-response`() = runBlocking {
-        val endpoint = endpointOf(POST, "/users/{userId}/docs/{docId}", setOf("text/plain"), setOf("text/html")) { request ->
+        val endpoint = RestEndpoint(POST, "/users/{userId}/docs/{docId}", setOf("text/plain"),
+            setOf("text/html")) { request ->
             val userId = request.path("userId").asString()
             val docId = request.path("docId").asString()
             val authToken = request.header("authorization").asString()

@@ -324,12 +324,6 @@ class RestEndpoint constructor(
     val handler: RequestHandler
 )
 
-fun endpointOf(method: HttpMethod, route: String, consumes: Set<String> = emptySet(),
-               produces: Set<String> = emptySet(), handler: RequestHandler): RestEndpoint {
-    return RestEndpoint(method, route, consumes, produces, handler)
-}
-
-
 internal data class EndpointPosition internal constructor(val method: HttpMethod, val route: ParameterizedRoute)
 
 /**
