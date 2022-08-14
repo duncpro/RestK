@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/duncpro/RestK/branch/master/graph/badge.svg?token=HEH1Q38EOD)](https://codecov.io/gh/duncpro/RestK)
 
 
-An extensible, typesafe, reflection-free, non-blocking, serverside REST framework for Kotlin.
+An extensible, typesafe, reflection-free, non-blocking, serverside framework for writing compliant REST APIs.
 
 The entire framework fits into a single reasonably sized file.
 You can get started with RestK in five minutes and master it in thirty.
@@ -48,7 +48,7 @@ handleRequest(
     path = platformRequest.path, // String
     query = platformRequest.query, // or parse query params yourself if not provided by platform
     header = platformRequest.header, // Map<String, List<String>>
-    body = platformRequest.body, /* as Channel<Byte>, or null if bodiless, see also handleInMemoryRequest */
+    body = MemoryRequestBodyContainer(platformRequest.body),
     router = routerOf(PublishDocumentEndpoint /*, ... */) // routerOf provided by RestK
 )
 ```

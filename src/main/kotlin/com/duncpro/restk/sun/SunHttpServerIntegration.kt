@@ -20,20 +20,20 @@ private val HttpExchange.isRequestBodyChunked: Boolean get() {
         .firstOrNull() ?: false
 }
 
-private val HttpExchange.requestContentLength: Int? get() {
+private val HttpExchange.requestContentLength: Long? get() {
     return (this.requestHeaders["Content-Length"] ?: emptyList())
-        .map(Integer::parseInt)
+        .map(String::toLong)
         .firstOrNull()
 }
 
 private val HttpExchange.hasRequestBody: Boolean get() {
     if (this.requestContentLength == null) return isRequestBodyChunked
-    if (this.requestContentLength != 0) return true
+    if (this.requestContentLength != 0L) return true
     return false
 }
 
 /**
- * Creates a new [HttpServer] which handles requests using the given [Router].
+ * Creates a new [HttpServer] which handles requests using the given [RestRouter].
  * The caller must invoke [HttpServer.start] on the returned [HttpServer] to begin accepting connections.
  * This function wraps Java's built-in blocking HTTP server, which does not take advantage of coroutines.
  * As such, it is not suitable for use in production. This function is explicitly intended for use
@@ -51,7 +51,10 @@ fun httpServerOf(router: RestRouter<EndpointGroup>, address: InetSocketAddress? 
                 path = exchange.requestURI.path,
                 query = parseQueryParams(exchange.requestURI.query),
                 header = exchange.requestHeaders,
-                body = if (exchange.hasRequestBody) consumeInputStreamAsChannel(exchange.requestBody) else null,
+                body = when (exchange.hasRequestBody) {
+                    true -> BlockingRequestBodyContainer(exchange.requestBody)
+                    false -> EmptyRequestBodyContainer
+                },
                 router
             )
 

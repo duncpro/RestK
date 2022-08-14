@@ -33,7 +33,7 @@ class SmokeTest {
             }
         }
 
-        val response = handleInMemoryRequest(
+        val response = handleRequest(
             method = POST,
             path = "/users/wasd/docs/readme.md",
             query = emptyMap(),
@@ -42,7 +42,7 @@ class SmokeTest {
                 Pair("content-type", listOf("text/plain")),
                 Pair("accept", listOf("text/html"))
             ),
-            body = ByteBuffer.wrap("Hello World!".toByteArray()),
+            body = MemoryRequestBodyContainer(ByteBuffer.wrap("Hello World!".toByteArray())),
             router = routerOf(endpoint)
         )
 

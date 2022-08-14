@@ -7,13 +7,14 @@ import com.duncpro.jroute.rest.RestRouter
 import com.duncpro.jroute.util.ParameterizedRoute
 import com.duncpro.jroute.router.Router
 import com.duncpro.restk.ResponseBodyContainer.FullResponseBodyContainer
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
+import java.io.InputStream
+import java.lang.ArithmeticException
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 
@@ -22,10 +23,10 @@ private val logger: Logger = LoggerFactory.getLogger("com.duncpro.restk")
 /**
  * Intended for use within [RequestHandler] functions, or functions which are used exclusively
  * within [RequestHandler]s. This exception is caught within [handleRequest] and used to create
- * an erroneous HTTP response. Deserialization methods, such as [RequestBodyContainer.asString],
- * [RestStringFieldValueReference.asDouble] and similar will throw this exception.
- * When caught by [handleRequest], the stacktrace will be printed using the SLF4j "com.duncpro.restk" logger
- * on [Level.INFO].
+ * an erroneous HTTP response. Deserialization methods, such as [RequestBodyContainer.asByteArray],
+ * [RequestBodyContainer.asFlow], [RestStringFieldValueReference.asDouble] and similar will
+ * throw this exception. When caught by [handleRequest], the stacktrace will be printed using the SLF4j "com.duncpro.restk"
+ * logger on [Level.INFO].
  */
 class RestException(val statusCode: Int = 400, cause: Throwable? = null, message: String? = null): Exception(message, cause)
 
@@ -34,31 +35,89 @@ class RestException(val statusCode: Int = 400, cause: Throwable? = null, message
  * When using custom data formats, consider creating an extension method on this class which
  * deserializes the response body. For an example implementation see [RequestBodyContainer.asString].
  */
-class RequestBodyContainer internal constructor(val bodyChannel: Channel<Byte>?)
+sealed interface RequestBodyContainer {
+    fun asFlow(): Flow<Byte>
+    suspend fun asByteBuffer(): ByteBuffer
+}
 
-fun RequestBodyContainer.asChannel(): Channel<Byte> {
-    if (bodyChannel == null) throw RestException(statusCode = 400, message = "Expected request to contain a body" +
-            " but none was provided byt he client")
-    return bodyChannel
+class MemoryRequestBodyContainer(private val data: ByteBuffer): RequestBodyContainer {
+    override fun asFlow(): Flow<Byte> = flow {
+        while (data.hasRemaining()) {
+            emit(data.get())
+        }
+    }
+
+    override suspend fun asByteBuffer(): ByteBuffer { return this.data; }
+}
+
+object EmptyRequestBodyContainer: RequestBodyContainer {
+    override fun asFlow(): Flow<Byte> {
+        throw RestException(statusCode = 400, message = "Expected request to contain body but it did not.")
+    }
+
+    override suspend fun asByteBuffer(): ByteBuffer {
+        throw RestException(statusCode = 400, message = "Expected request to contain body but it did not.")
+    }
+}
+
+class AsyncRequestBodyContainer(
+    private val channel: Channel<Byte>,
+    private val contentLength: Long?
+): RequestBodyContainer {
+    override fun asFlow(): Flow<Byte> = channel.consumeAsFlow()
+
+    override suspend fun asByteBuffer(): ByteBuffer {
+        if (contentLength != null) {
+            val buffer = ByteBuffer.allocate(kotlin.run {
+                try {
+                    Math.toIntExact(contentLength)
+                } catch (e: ArithmeticException) {
+                    throw RestException(statusCode = 413, message = "Request length overflows integer and can therefore" +
+                            " not be represented as a single ByteBuffer.")
+                }
+            })
+            this.asFlow().collect(buffer::put)
+            return buffer
+
+        }
+        return ByteBuffer.wrap(asFlow().toCollection(ArrayList()).toByteArray())
+    }
+}
+
+class BlockingRequestBodyContainer(private val inputStream: InputStream): RequestBodyContainer  {
+    override fun asFlow(): Flow<Byte> = flow {
+        inputStream.use {
+            var b: Int
+            do {
+                b = inputStream.read()
+                if (b != -1) emit(b.toByte())
+            } while (b != -1)
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun asByteBuffer(): ByteBuffer
+        = inputStream.use {
+            try {
+                ByteBuffer.wrap(inputStream.readBytes())
+            } catch (e: OutOfMemoryError) {
+                throw RestException(statusCode = 413, message = "Request length overflows integer and can therefore" +
+                        " not be represented as a single ByteBuffer.")
+            }
+    }
+}
+
+suspend fun RequestBodyContainer.asByteArray(): ByteArray {
+    val source = this.asByteBuffer()
+    val destination = ByteArray(source.remaining())
+    source.get(destination)
+    return destination
 }
 
 /**
  * Deserializes the response body into a [String].
  * @throws RestException if the byte channel can not be deserialized into a [String] using the given charset.
- *  The exception contains an HTTP Status Code of 400 Bad Request.
  */
-suspend fun RequestBodyContainer.asString(charset: Charset = Charset.defaultCharset()): String {
-    val builder = ArrayList<Byte>()
-    try {
-        this.asChannel()
-            .consumeAsFlow()
-            .toCollection(builder)
-    } catch (e: IllegalArgumentException) {
-        throw RestException(400, e)
-    }
-
-    return String(builder.toByteArray(), charset)
-}
+suspend fun RequestBodyContainer.asString(charset: Charset = Charset.defaultCharset()): String = String(asByteArray(), charset)
 
 enum class RestStringFieldType {
     HEADER,
@@ -312,16 +371,13 @@ fun routerOf(vararg endpoints: RestEndpoint): RestRouter<EndpointGroup> {
  * a [RestResponse] HTTP 400 Bad Request will be returned. If the delegated [RequestHandler] ([RestEndpoint]) throws a
  * [RestException], an [RestResponse] with status code equal to [RestException.statusCode] will be returned. If any
  * other exception occurs, it will not be caught and will bubble up to the caller.
- * If the HTTP server platform being provides the request body in the form of a [ByteArray] or [ByteBuffer] use
- * [handleInMemoryRequest] instead of this function. If the HTTP server platform being used is blocking,
- * then [pipeFlowToOutputStream] and [consumeInputStreamAsChannel], may be helpful.
  */
 suspend fun handleRequest(
     method: HttpMethod,
     path: String,
     query: Map<String, List<String>>,
     header: Map<String, List<String>>,
-    body: Channel<Byte>?,
+    body: RequestBodyContainer,
     router: RestRouter<EndpointGroup>
 ): RestResponse {
     val endpointGroup = when (val result = router.route(method, path)) {
@@ -364,12 +420,8 @@ suspend fun handleRequest(
     }
 
 
-    val request = RestRequest(
-        path = endpointGroup.position.route.extractVariablesMap(Path(path)),
-        query = query,
-        header = sanitizedHeader,
-        body = RequestBodyContainer(body)
-    )
+    val request = RestRequest(endpointGroup.position.route.extractVariablesMap(Path(path)), query,
+        sanitizedHeader, body)
 
     return try {
         var response = matchedEndpoint.handler(request)
@@ -384,23 +436,4 @@ suspend fun handleRequest(
         logger.info("An error occurred while processing request.", e)
         RestResponse(e.statusCode, emptyMap(), null)
     }
-}
-
-suspend fun handleInMemoryRequest(
-    method: HttpMethod,
-    path: String,
-    query: Map<String, List<String>>,
-    header: Map<String, List<String>>,
-    body: ByteBuffer?,
-    router: RestRouter<EndpointGroup>
-): RestResponse = coroutineScope {
-    if (body == null) return@coroutineScope handleRequest(method, path, query, header, null, router)
-    val bodyChannel = Channel<Byte>(body.limit())
-    val writeToChannelJob = launch {
-        while (body.hasRemaining()) {
-            bodyChannel.send(body.get())
-        }
-    }
-    writeToChannelJob.invokeOnCompletion(bodyChannel::close)
-    return@coroutineScope handleRequest(method, path, query, header, bodyChannel, router)
 }
