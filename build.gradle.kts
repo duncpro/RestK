@@ -1,13 +1,13 @@
 plugins {
-    kotlin("jvm") version "1.7.10"
-    id("org.jetbrains.dokka") version "1.7.10"
+    kotlin("jvm") version "1.6.21"
+    id("org.jetbrains.dokka") version "1.6.21"
     jacoco
     `maven-publish`
     java
 }
 
 group = "com.duncpro.restk"
-version = "1.0-SNAPSHOT-10"
+version = "1.0-SNAPSHOT-11"
 
 repositories {
     mavenCentral()
