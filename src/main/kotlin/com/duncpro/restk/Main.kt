@@ -2,8 +2,10 @@ package com.duncpro.restk
 
 import com.duncpro.jroute.rest.HttpMethod
 import com.duncpro.jroute.Path
+import com.duncpro.jroute.rest.RestResource
 import com.duncpro.jroute.rest.RestRouteResult
 import com.duncpro.jroute.rest.RestRouter
+import com.duncpro.jroute.route.Route
 import com.duncpro.jroute.util.ParameterizedRoute
 import com.duncpro.jroute.router.Router
 import com.duncpro.restk.ResponseBodyContainer.FullResponseBodyContainer
@@ -15,7 +17,6 @@ import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import java.io.InputStream
 import java.lang.ArithmeticException
-import java.lang.RuntimeException
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 
@@ -324,6 +325,7 @@ class RestEndpoint constructor(
     val handler: RequestHandler
 )
 
+
 internal data class EndpointPosition internal constructor(val method: HttpMethod, val route: ParameterizedRoute)
 
 /**
@@ -337,25 +339,144 @@ internal data class EndpointPosition internal constructor(val method: HttpMethod
  * The function [handleRequest] will automatically perform content-negotiation and match the request to the endpoint
  * corresponding to the content-type and accept headers included within the request.
  *
- * [EndpointGroup]s are created automatically, by [routerOf].
+ * [ContentEndpointGroup]s are created automatically, by [createRouter].
  */
-class EndpointGroup internal constructor(
+class ContentEndpointGroup internal constructor(
     internal val position: EndpointPosition,
     internal val likeEndpoints: Set<RestEndpoint>
 )
 
 /**
- * Creates a [Router] containing the given [RestEndpoint]s. The value returned by this function
- * should be passed to [handleRequest] or [handleInMemoryRequest] along with the details
- * of the inbound request.
+ * A set of browser-enforced permissions describing what HTTP Methods and HTTP headers an origin is permitted
+ * to use when communicating with a web server.
+ *
+ * @property allowedMethods the set of all methods which an origin has permission to access. If empty, then the
+ *  origin is considered forbidden, and no Access-Control-Allow-Origin, or Access-Control-Allow-Methods header will be
+ *  attached to the response. If the set contains at least one method, then both of the aforementioned headers will be
+ *  automatically included in the response.
+ * @property allowedHeaders the set of all headers which an origin has permission to send. If empty, then the
+ *  Access-Control-Allow-Headers header is not attached to the response. If the set contains at least one element,
+ *  then the Access-Control-Allow-Headers header will be automatically included in the response.
  */
-fun routerOf(vararg endpoints: RestEndpoint): RestRouter<EndpointGroup> {
-    val router = RestRouter<EndpointGroup>()
-    endpoints
+data class BrowserEnforcedAccessControl(val allowedMethods: Set<HttpMethod>, val allowedHeaders: Set<String>) {
+    companion object {
+        val Forbidden = BrowserEnforcedAccessControl(emptySet(), emptySet())
+    }
+}
+
+typealias RestResourceIntrospector = () -> RestResource<ContentEndpointGroup>
+
+/**
+ * A policy describing the capabilities that various origins are granted with respect to the endpoints provided by some
+ * [RestRouter].
+ *
+ * The [String] parameter is the origin (example: http://example.com) which is requesting access to some serverside endpoint.
+ * The [Route] parameter describes the route which the origin is requesting access to.
+ * The [RestResourceIntrospector] is a function which returns the [RestResource] matching the given [Route].
+ */
+typealias CorsPolicy = (String?, Route, RestResourceIntrospector) -> BrowserEnforcedAccessControl
+
+object CorsPolicies {
+    /**
+     * Creates a permissive CORS policy which grants permission to all origins to use all resources and methods.
+     * By default, this policy will grant only authorization header permission. More headers can be added
+     * by passing a set of header names for the [allowedHeaders] parameter.
+     */
+    fun public(allowedHeaders: Set<String> = setOf("authorization")): CorsPolicy = { _, _, introspect ->
+        val targetResource = introspect()
+        val allowedMethods = HttpMethod.values().asSequence()
+            .filter { method -> targetResource.getMethodEndpoint(method).isPresent }
+            .toSet()
+        BrowserEnforcedAccessControl(allowedMethods, allowedHeaders)
+    }
+
+    /**
+     * Creates a private CORS policy which grants permission to only whitelisted origins to use all resources and methods.
+     * More restrictive policies can be created by implementing [CorsPolicy] directly.
+     */
+    fun private(allowedHeaders: Set<String>, originWhitelist: Set<String>): CorsPolicy {
+        val sanitizedOriginWhitelist = originWhitelist.asSequence()
+            .map(String::lowercase).
+            toSet()
+        return policy@{ origin, _, introspect ->
+            if (origin == null) return@policy BrowserEnforcedAccessControl.Forbidden
+            if (!sanitizedOriginWhitelist.contains(origin.lowercase())) {
+                return@policy BrowserEnforcedAccessControl.Forbidden
+            }
+            val targetResource = introspect()
+            val allowedMethods = HttpMethod.values().asSequence()
+                .filter { method -> targetResource.getMethodEndpoint(method).isPresent }
+                .toSet()
+            BrowserEnforcedAccessControl(allowedMethods, allowedHeaders)
+        }
+    }
+}
+
+private fun createPreflightEndpoint(route: Route, corsPolicy: CorsPolicy, router: RestRouter<ContentEndpointGroup>) = RestEndpoint(HttpMethod.OPTIONS, route.toString(), emptySet(),
+    emptySet()) { preflightRequest ->
+
+    val origin = preflightRequest.header["origin"]?.firstOrNull()
+    val resourceIntrospector: RestResourceIntrospector = { router.getEndpoint(route).orElseThrow(::IllegalStateException) }
+    val permissions = corsPolicy(origin, route, resourceIntrospector)
+
+    responseOf {
+        statusCode = 204
+
+        if (permissions.allowedMethods.isNotEmpty()) {
+            header("Access-Control-Allow-Methods", permissions.allowedMethods
+                .map(HttpMethod::name)
+                .joinToString(", "))
+            origin?.let {
+                header("Access-Control-Allow-Origin", origin)
+            }
+        }
+
+        if (permissions.allowedHeaders.isNotEmpty()) {
+            header("Access-Control-Allow-Headers", permissions.allowedHeaders.joinToString(", "))
+        }
+    }
+}
+
+private fun wrapEndpointWithCorsSupport(endpoint: RestEndpoint, corsPolicy: CorsPolicy?, router: RestRouter<ContentEndpointGroup>): RestEndpoint {
+    if (corsPolicy == null) return endpoint
+
+    return RestEndpoint(endpoint.method, endpoint.route, endpoint.consumeContentType, endpoint.produceContentType) { request ->
+        val origin = request.header["origin"]?.firstOrNull()
+        val route = ParameterizedRoute.parse(endpoint.route)
+        val permissions = corsPolicy(origin, route) { router.getEndpoint(route).orElseThrow(::IllegalStateException) }
+        val permissionGranted = permissions.allowedMethods.isNotEmpty()
+        val response = endpoint.handler(request)
+
+        if (permissionGranted && origin != null) {
+            response.copy(header = response.header + Pair("Access-Control-Allow-Origin", listOf(origin)))
+        } else {
+            response
+        }
+    }
+}
+
+/**
+ * Creates a [Router] containing the given [RestEndpoint]s. The value returned by this function
+ * should be passed to [handleRequest].
+ */
+fun createRouter(endpoints: Iterable<RestEndpoint>, corsPolicy: CorsPolicy?): RestRouter<ContentEndpointGroup> {
+    val router = RestRouter<ContentEndpointGroup>()
+
+    // Register implicit CORS preflight OPTIONS request endpoints.
+    val implicitCorsPreflightEndpoints = endpoints.asSequence()
+        .map(RestEndpoint::route)
+        .map(ParameterizedRoute::parse)
+        .distinct()
+        .mapNotNull { route -> corsPolicy?.let { createPreflightEndpoint(route, corsPolicy, router) } }
+        .toList()
+
+    // Register all explicitly defined endpoints.
+    (endpoints union implicitCorsPreflightEndpoints)
+        .map { endpoint -> wrapEndpointWithCorsSupport(endpoint, corsPolicy, router) }
         .groupBy { EndpointPosition(it.method, ParameterizedRoute.parse(it.route)) }
-        .map { (position, likeEndpoints) -> EndpointGroup(position, likeEndpoints.toSet()) }
-        .forEach { endpointGroup -> router.add(endpointGroup.position.method, endpointGroup.position.route,
-            endpointGroup) }
+        .map { (position, likeEndpoints) -> ContentEndpointGroup(position, likeEndpoints.toSet()) }
+        .forEach { endpointGroup -> router.add(endpointGroup.position.method, endpointGroup.position.route, endpointGroup) }
+
     return router
 }
 
@@ -373,12 +494,12 @@ suspend fun handleRequest(
     query: Map<String, List<String>>,
     header: Map<String, List<String>>,
     body: RequestBodyContainer,
-    router: RestRouter<EndpointGroup>
+    router: RestRouter<ContentEndpointGroup>
 ): RestResponse {
     val endpointGroup = when (val result = router.route(method, path)) {
-        is RestRouteResult.ResourceNotFound<EndpointGroup> -> { return RestResponse(404, emptyMap(), null) }
-        is RestRouteResult.UnsupportedMethod<EndpointGroup> -> { return RestResponse(405, emptyMap(), null) }
-        is RestRouteResult.RestRouteMatch<EndpointGroup> -> result.endpoint
+        is RestRouteResult.ResourceNotFound<ContentEndpointGroup> -> { return RestResponse(404, emptyMap(), null) }
+        is RestRouteResult.UnsupportedMethod<ContentEndpointGroup> -> { return RestResponse(405, emptyMap(), null) }
+        is RestRouteResult.RestRouteMatch<ContentEndpointGroup> -> result.methodEndpoint
         else -> throw AssertionError()
     }
 

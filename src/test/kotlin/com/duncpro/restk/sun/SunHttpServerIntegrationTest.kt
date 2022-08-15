@@ -33,7 +33,7 @@ class SunHttpServerIntegrationTest {
             }
         }
 
-        val server = httpServerOf(routerOf(GreetingEndpoint), InetSocketAddress(8080))
+        val server = httpServerOf(createRouter(endpoints = setOf(GreetingEndpoint), corsPolicy = null), InetSocketAddress(8080))
         server.start()
         val client = HttpClient(CIO)
         runBlocking {

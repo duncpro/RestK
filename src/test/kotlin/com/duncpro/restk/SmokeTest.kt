@@ -44,7 +44,10 @@ class SmokeTest {
                 Pair("accept", listOf("text/html"))
             ),
             body = MemoryRequestBodyContainer(ByteBuffer.wrap("Hello World!".toByteArray())),
-            router = routerOf(endpoint)
+            router = createRouter(
+                endpoints = setOf(endpoint),
+                corsPolicy = null
+            )
         )
 
         assertEquals(201, response.statusCode)

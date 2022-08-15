@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.duncpro.restk"
-version = "1.0-SNAPSHOT-14"
+version = "1.0-SNAPSHOT-15"
 
 repositories {
     mavenCentral()
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    api("com.duncpro:jroute:1.0-SNAPSHOT-9")
+    api("com.duncpro:jroute:1.0-SNAPSHOT-12")
     testImplementation("io.ktor:ktor-client-cio:2.1.0")
     testImplementation("io.ktor:ktor-client-core-jvm:2.1.0")
     testImplementation("org.slf4j:slf4j-simple:1.7.36")

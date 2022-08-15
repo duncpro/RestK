@@ -43,7 +43,7 @@ private val HttpExchange.hasRequestBody: Boolean get() {
  * when testing applications locally. Consider using a different HTTP server implementation when operating
  * in th real world.
  */
-fun httpServerOf(router: RestRouter<EndpointGroup>, address: InetSocketAddress? = null, backlog: Int = SYSTEM_DEFAULT_BACKLOG): HttpServer {
+fun httpServerOf(router: RestRouter<ContentEndpointGroup>, address: InetSocketAddress? = null, backlog: Int = SYSTEM_DEFAULT_BACKLOG): HttpServer {
     val httpServer = HttpServer.create(address, backlog)
     httpServer.executor = Dispatchers.IO.asExecutor()
 
