@@ -21,7 +21,7 @@ class CorsTest {
                 Pair("authorization", listOf("abc123")),
                 Pair("origin", listOf("https://example.com"))
             ),
-            body = MemoryRequestBodyContainer(ByteBuffer.wrap("Hello World!".toByteArray())),
+            body = MemoryRequestBody(ByteBuffer.wrap("Hello World!".toByteArray())),
             router = createRouter(
                 endpoints = setOf(endpoint),
                 corsPolicy = CorsPolicies.public()
@@ -48,7 +48,7 @@ class CorsTest {
             header = mapOf(
                Pair("origin", listOf("https://example.com"))
             ),
-            body = MemoryRequestBodyContainer(ByteBuffer.wrap("Hello World!".toByteArray())),
+            body = MemoryRequestBody(ByteBuffer.wrap("Hello World!".toByteArray())),
             router = createRouter(
                 endpoints = setOf(put, post),
                 corsPolicy = CorsPolicies.public()

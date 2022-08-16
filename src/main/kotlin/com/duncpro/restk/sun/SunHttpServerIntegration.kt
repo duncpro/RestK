@@ -3,8 +3,6 @@ package com.duncpro.restk.sun
 import com.duncpro.jroute.rest.HttpMethod
 import com.duncpro.jroute.rest.RestRouter
 import com.duncpro.restk.*
-import com.duncpro.restk.ResponseBodyContainer.AutoChunkedResponseBodyContainer
-import com.duncpro.restk.ResponseBodyContainer.FullResponseBodyContainer
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.*
@@ -56,8 +54,8 @@ fun httpServerOf(router: RestRouter<ContentEndpointGroup>, address: InetSocketAd
                     query = parseQueryParams(exchange.requestURI.query),
                     header = exchange.requestHeaders,
                     body = when (exchange.hasRequestBody) {
-                        true -> BlockingRequestBodyContainer(exchange.requestBody)
-                        false -> EmptyRequestBodyContainer
+                        true -> BlockingRequestBody(exchange.requestContentLength, exchange.requestBody)
+                        false -> EmptyRequestBody
                     },
                     router
                 )

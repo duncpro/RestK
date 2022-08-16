@@ -2,6 +2,7 @@ package com.duncpro.restk.sun
 
 import com.duncpro.jroute.rest.HttpMethod
 import com.duncpro.restk.*
+import com.duncpro.restk.ContentType
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
@@ -21,17 +22,19 @@ class SunHttpServerIntegrationTest {
 
     @Test
     fun `can handle requests`() {
-        val GreetingEndpoint = RestEndpoint(HttpMethod.POST, "/greeting", setOf("text/plain; charset=UTF-8"),
-            setOf("text/plain; charset=UTF-8")) { request ->
-
-            val user = request.query("user").asString()
-            val echo = request.body.asString()
-            responseOf {
-                statusCode = 200
-                body("Hello $user: $echo")
-                header("content-type", "text/plain")
-            }
-        }
+        val GreetingEndpoint = RestEndpoint(
+            method = HttpMethod.POST,
+            route = "/greeting",
+            consumeContentType = setOf(ContentTypes.Text.PLAIN),
+            produceContentType = setOf(ContentTypes.Text.PLAIN),
+            handler = { request ->
+                val user = request.query("user").asString()
+                val echo = request.body.asString()
+                responseOf {
+                    statusCode = 200
+                    body("Hello $user: $echo", ContentTypes.Text.PLAIN)
+                }
+            })
 
         val server = httpServerOf(createRouter(endpoints = setOf(GreetingEndpoint), corsPolicy = null), InetSocketAddress(8080))
         server.start()

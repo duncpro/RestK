@@ -32,8 +32,8 @@ suspend fun pipeFlowToOutputStream(flow: Flow<Byte>, outputStream: OutputStream)
 }
 
 suspend fun ResponseBodyContainer.collect(): ByteArray = when (this) {
-    is ResponseBodyContainer.AutoChunkedResponseBodyContainer ->  this.data.toCollection(ArrayList()).toByteArray()
-    is ResponseBodyContainer.FullResponseBodyContainer -> {
+    is AutoChunkedResponseBodyContainer ->  this.data.toCollection(ArrayList()).toByteArray()
+    is FullResponseBodyContainer -> {
         val buffer = ByteArray(try {
             Math.toIntExact(this.contentLength)
         } catch (e: ArithmeticException) {

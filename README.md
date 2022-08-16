@@ -18,7 +18,7 @@ come with a thin wrapper around the Sun Microsystems HTTP Server which is shippe
 with most distributions of the JVM. The Sun HTTP Server platform may be used
 when testing an application locally, but not in production.
 In production, consider pairing RestK with a battle-tested HTTP server implementation
-like Netty or Ktor. 
+like Netty or Ktor.
 
 ## Getting Started
 ### Define an Endpoint
@@ -49,7 +49,7 @@ handleRequest(
     query = platformRequest.query, // or parse query params yourself if not provided by platform
     header = platformRequest.header, // Map<String, List<String>>
     body = MemoryRequestBodyContainer(platformRequest.body),
-    router = routerOf(PublishDocumentEndpoint /*, ... */) // routerOf provided by RestK
+    router = createRouter(endpoints = setOf(PublishDocumentEndpoint /*, ... */)) // method provided by RestK
 )
 ```
 
@@ -60,6 +60,8 @@ This is intended to aid in local-testing and prototyping.
 val router: Router<EndpointGroup> = TODO()
 httpServerOf(router, InetSocketAddress(8080)).start()
 ```
+
+# Adding CORS Support
 
 ### Docs
 API Documentation for the master branch can be found [here](https://duncpro.github.io/RestK/-rest-k/com.duncpro.restk/index.html).
