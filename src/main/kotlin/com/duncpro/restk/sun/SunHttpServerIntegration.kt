@@ -49,8 +49,8 @@ fun httpServerOf(router: RestRouter<ContentEndpointGroup>, address: InetSocketAd
     httpServer.createContext("/") { exchange ->
         try {
             runBlocking {
-                exchange.use {
-                    val response = handleRequest(
+                val response = try {
+                    handleRequest(
                         method = HttpMethod.valueOf(exchange.requestMethod.uppercase()),
                         path = exchange.requestURI.path,
                         query = parseQueryParams(exchange.requestURI.query),
@@ -61,27 +61,30 @@ fun httpServerOf(router: RestRouter<ContentEndpointGroup>, address: InetSocketAd
                         },
                         router
                     )
-
-                    exchange.responseHeaders.putAll(response.header)
-
-                    val contentLength = when (response.body) {
-                        is AutoChunkedResponseBodyContainer -> 0L
-                        is FullResponseBodyContainer -> response.body.contentLength
-                        null -> -1L
-                    }
-
-                    try {
-                        exchange.sendResponseHeaders(response.statusCode, contentLength)
-                        if (response.body != null) pipeFlowToOutputStream(response.body.data, exchange.responseBody)
-                    } catch (e: IOException) {
-                        logger.info("Client disconnected prematurely and therefore did not receive the response.", e)
-                    }
+                } catch (e: Exception) {
+                    logger.error("Unhandled exception in request handler", e)
+                    RestResponse(500, emptyMap(), null)
                 }
 
+                exchange.responseHeaders.putAll(response.header)
+
+                val contentLength = when (response.body) {
+                    is AutoChunkedResponseBodyContainer -> 0L
+                    is FullResponseBodyContainer -> response.body.contentLength
+                    null -> -1L
+                }
+
+                try {
+                    exchange.sendResponseHeaders(response.statusCode, contentLength)
+                    if (response.body != null) pipeFlowToOutputStream(response.body.data, exchange.responseBody)
+                } catch (e: IOException) {
+                    logger.info("Client disconnected prematurely and therefore did not receive the response.", e)
+                }
             }
-        } catch (e: Exception) {
-            logger.error("Unhandled exception occurred while processing request", e)
+        } finally {
+            exchange.close()
         }
+
     }
 
     return httpServer
