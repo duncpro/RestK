@@ -74,7 +74,7 @@ fun httpServerOf(router: RestRouter<ContentEndpointGroup>, address: InetSocketAd
                         exchange.sendResponseHeaders(response.statusCode, contentLength)
                         if (response.body != null) pipeFlowToOutputStream(response.body.data, exchange.responseBody)
                     } catch (e: IOException) {
-                        logger.info("Client disconected prematurely and therefore did not receive the response.", e)
+                        logger.info("Client disconnected prematurely and therefore did not receive the response.", e)
                     }
                 }
 
