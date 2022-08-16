@@ -63,6 +63,9 @@ $dokka.location:com.duncpro.restk/ContentTypes.Text///PointingToDeclaration/-re
 $dokka.location:com.duncpro.restk/ContentTypes.Text/HTML/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-content-types/-text/-h-t-m-l.html
 $dokka.location:com.duncpro.restk/ContentTypes.Text/PLAIN/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-content-types/-text/-p-l-a-i-n.html
 $dokka.location:com.duncpro.restk/ContentTypes///PointingToDeclaration/-rest-k/com.duncpro.restk/-content-types/index.html
+$dokka.location:com.duncpro.restk/ContentTypes/ANY/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-content-types/-a-n-y.html
+$dokka.location:com.duncpro.restk/ContentTypes/isMatch/#com.duncpro.restk.ContentType#com.duncpro.restk.ContentType/PointingToDeclaration/-rest-k/com.duncpro.restk/-content-types/is-match.html
+$dokka.location:com.duncpro.restk/ContentTypes/isMatch/#com.duncpro.restk.ContentType?#kotlin.collections.Set[com.duncpro.restk.ContentType]/PointingToDeclaration/-rest-k/com.duncpro.restk/-content-types/is-match.html
 $dokka.location:com.duncpro.restk/CorsPolicies///PointingToDeclaration/-rest-k/com.duncpro.restk/-cors-policies/index.html
 $dokka.location:com.duncpro.restk/CorsPolicies/private/#kotlin.collections.Set[kotlin.String]#kotlin.collections.Set[kotlin.String]/PointingToDeclaration/-rest-k/com.duncpro.restk/-cors-policies/private.html
 $dokka.location:com.duncpro.restk/CorsPolicies/public/#kotlin.collections.Set[kotlin.String]/PointingToDeclaration/-rest-k/com.duncpro.restk/-cors-policies/public.html
@@ -107,7 +110,7 @@ $dokka.location:com.duncpro.restk/ResponseBuilderContext/body/#/PointingToDeclar
 $dokka.location:com.duncpro.restk/ResponseBuilderContext/header/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-builder-context/header.html
 $dokka.location:com.duncpro.restk/ResponseBuilderContext/statusCode/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-response-builder-context/status-code.html
 $dokka.location:com.duncpro.restk/RestEndpoint///PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/index.html
-$dokka.location:com.duncpro.restk/RestEndpoint/RestEndpoint/#com.duncpro.jroute.rest.HttpMethod#kotlin.String#kotlin.collections.Set[com.duncpro.restk.ContentType]#kotlin.collections.Set[com.duncpro.restk.ContentType]#kotlin.coroutines.SuspendFunction1[com.duncpro.restk.RestRequest,com.duncpro.restk.RestResponse]/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/-rest-endpoint.html
+$dokka.location:com.duncpro.restk/RestEndpoint/RestEndpoint/#com.duncpro.jroute.rest.HttpMethod#kotlin.String#kotlin.collections.Set[com.duncpro.restk.ContentType]#com.duncpro.restk.ContentType?#kotlin.coroutines.SuspendFunction1[com.duncpro.restk.RestRequest,com.duncpro.restk.RestResponse]/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/-rest-endpoint.html
 $dokka.location:com.duncpro.restk/RestEndpoint/consumeContentType/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/consume-content-type.html
 $dokka.location:com.duncpro.restk/RestEndpoint/handler/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/handler.html
 $dokka.location:com.duncpro.restk/RestEndpoint/method/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-endpoint/method.html
