@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
+import java.io.IOException
 import java.net.InetSocketAddress
 import java.util.*
 import java.util.Collections.emptyList
@@ -48,28 +49,35 @@ fun httpServerOf(router: RestRouter<ContentEndpointGroup>, address: InetSocketAd
     httpServer.createContext("/") { exchange ->
         try {
             runBlocking {
-                val response = handleRequest(
-                    method = HttpMethod.valueOf(exchange.requestMethod.uppercase()),
-                    path = exchange.requestURI.path,
-                    query = parseQueryParams(exchange.requestURI.query),
-                    header = exchange.requestHeaders,
-                    body = when (exchange.hasRequestBody) {
-                        true -> BlockingRequestBody(exchange.requestContentLength, exchange.requestBody)
-                        false -> EmptyRequestBody
-                    },
-                    router
-                )
+                exchange.use {
+                    val response = handleRequest(
+                        method = HttpMethod.valueOf(exchange.requestMethod.uppercase()),
+                        path = exchange.requestURI.path,
+                        query = parseQueryParams(exchange.requestURI.query),
+                        header = exchange.requestHeaders,
+                        body = when (exchange.hasRequestBody) {
+                            true -> BlockingRequestBody(exchange.requestContentLength, exchange.requestBody)
+                            false -> EmptyRequestBody
+                        },
+                        router
+                    )
 
-                exchange.responseHeaders.putAll(response.header)
+                    exchange.responseHeaders.putAll(response.header)
 
-                val contentLength = when (response.body) {
-                    is AutoChunkedResponseBodyContainer -> 0L
-                    is FullResponseBodyContainer -> response.body.contentLength
-                    null -> -1L
+                    val contentLength = when (response.body) {
+                        is AutoChunkedResponseBodyContainer -> 0L
+                        is FullResponseBodyContainer -> response.body.contentLength
+                        null -> -1L
+                    }
+
+                    try {
+                        exchange.sendResponseHeaders(response.statusCode, contentLength)
+                        if (response.body != null) pipeFlowToOutputStream(response.body.data, exchange.responseBody)
+                    } catch (e: IOException) {
+                        logger.info("Client disconected prematurely and therefore did not receive the response.", e)
+                    }
                 }
-                exchange.sendResponseHeaders(response.statusCode, contentLength)
-                if (response.body != null) pipeFlowToOutputStream(response.body.data, exchange.responseBody)
-                exchange.close()
+
             }
         } catch (e: Exception) {
             logger.error("Unhandled exception occurred while processing request", e)
