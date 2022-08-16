@@ -6,12 +6,26 @@ import java.text.DecimalFormat
 import java.util.Objects
 
 object ContentTypes {
+    val ANY = ContentType("*", "*", Charsets.UTF_8)
+
     object Application {
         val JSON = ContentType("application", "json", Charsets.UTF_8)
     }
     object Text {
         val PLAIN = ContentType("text", "plain", Charsets.UTF_8)
         val HTML = ContentType("text", "html", Charsets.UTF_8)
+    }
+
+    fun isMatch(produced: ContentType?, consumable: Set<ContentType>): Boolean {
+        if (produced == null) return consumable.contains(ANY) || consumable.isEmpty()
+        return consumable.any { isMatch(produced, it) }
+    }
+
+    fun isMatch(a: ContentType, b: ContentType): Boolean {
+        val mimeTypeMatch = a.mimeType == b.mimeType || setOf(a.mimeType, b.mimeType).contains("*")
+        val mimeSubTypeMatch = (a.mimeSubType == b.mimeSubType) || setOf(a.mimeSubType, b.mimeSubType).contains("*")
+        val charsetMatch = a.charset == b.charset
+        return mimeTypeMatch && mimeSubTypeMatch && charsetMatch
     }
 }
 

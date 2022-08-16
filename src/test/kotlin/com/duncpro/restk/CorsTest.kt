@@ -9,7 +9,7 @@ import java.nio.ByteBuffer
 class CorsTest {
     @Test
     fun `test simple get`() = runBlocking {
-        val endpoint = RestEndpoint(HttpMethod.GET, "/hello", emptySet(), emptySet()) { request ->
+        val endpoint = RestEndpoint(HttpMethod.GET, "/hello", emptySet(), null) { request ->
             responseOf { statusCode = 200 }
         }
 
@@ -34,10 +34,10 @@ class CorsTest {
 
     @Test
     fun `test preflight`() = runBlocking {
-        val put = RestEndpoint(HttpMethod.PUT, "/hello", emptySet(), emptySet()) { request ->
+        val put = RestEndpoint(HttpMethod.PUT, "/hello", emptySet(), null) { request ->
             responseOf { statusCode = 200 }
         }
-        val post = RestEndpoint(HttpMethod.POST, "/hello", emptySet(), emptySet()) { request ->
+        val post = RestEndpoint(HttpMethod.POST, "/hello", emptySet(), null) { request ->
             responseOf { statusCode = 200 }
         }
 

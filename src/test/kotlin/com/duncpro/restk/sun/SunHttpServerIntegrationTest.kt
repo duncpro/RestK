@@ -26,7 +26,7 @@ class SunHttpServerIntegrationTest {
             method = HttpMethod.POST,
             route = "/greeting",
             consumeContentType = setOf(ContentTypes.Text.PLAIN),
-            produceContentType = setOf(ContentTypes.Text.PLAIN),
+            produceContentType = ContentTypes.Text.PLAIN,
             handler = { request ->
                 val user = request.query("user").asString()
                 val echo = request.body.asString()

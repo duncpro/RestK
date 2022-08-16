@@ -24,7 +24,7 @@ class RestEndpoint constructor(
     val method: HttpMethod,
     val route: String,
     val consumeContentType: Set<ContentType>,
-    val produceContentType: Set<ContentType>,
+    val produceContentType: ContentType?,
     val handler: RequestHandler
 )
 
@@ -114,8 +114,8 @@ object CorsPolicies {
     }
 }
 
-private fun createPreflightEndpoint(route: Route, corsPolicy: CorsPolicy, router: RestRouter<ContentEndpointGroup>) = RestEndpoint(HttpMethod.OPTIONS, route.toString(), emptySet(),
-    emptySet()) { preflightRequest ->
+private fun createPreflightEndpoint(route: Route, corsPolicy: CorsPolicy, router: RestRouter<ContentEndpointGroup>) =
+    RestEndpoint(HttpMethod.OPTIONS, route.toString(), emptySet(), null) { preflightRequest ->
 
     val origin = preflightRequest.header["origin"]?.firstOrNull()
     val resourceIntrospector: RestResourceIntrospector = { router.getEndpoint(route).orElseThrow(::IllegalStateException) }
@@ -204,10 +204,7 @@ suspend fun handleRequest(
     val request = RestRequest(endpointGroup.position.route.extractVariablesMap(Path(path)), query, header, body)
 
     val capableConsumerEndpoints = endpointGroup.likeEndpoints
-        .filter { endpoint ->
-            (endpoint.consumeContentType.isEmpty() && request.contentType() == null)
-                    || endpoint.consumeContentType.contains(request.contentType())
-        }
+        .filter { endpoint -> ContentTypes.isMatch(request.contentType(), endpoint.consumeContentType) }
 
     if (capableConsumerEndpoints.isEmpty()) {
        logger.info("Unable to process request because the request payload contains an unsupported media type: " +
@@ -215,20 +212,14 @@ suspend fun handleRequest(
         return RestResponse(415, emptyMap(), null)
     }
 
-    val accepts = request.accepts()
-        .map(QualifiableContentType::contentType)
-        .toSet()
-
+    val accepts = request.accepts().map(QualifiableContentType::contentType).toSet()
     val matchedEndpoint = capableConsumerEndpoints
-        .firstOrNull { endpoint -> (endpoint.produceContentType.isEmpty() && request.accepts().isEmpty())
-                || (endpoint.produceContentType intersect accepts).isNotEmpty() }
+        .firstOrNull { endpoint -> ContentTypes.isMatch(endpoint.produceContentType, accepts) }
 
     if (matchedEndpoint == null) {
         logger.info("Unable to process request because the accept header does not contain any supported media types.")
         return RestResponse(406, emptyMap(), null)
     }
-
-
 
     return try {
         return matchedEndpoint.handler(request)

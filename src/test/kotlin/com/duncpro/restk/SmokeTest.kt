@@ -21,7 +21,7 @@ class SmokeTest {
             method = POST,
             route = "/users/{userId}/docs/{docId}",
             consumeContentType = setOf(ContentTypes.Text.PLAIN),
-            produceContentType = setOf(ContentTypes.Text.HTML),
+            produceContentType = ContentTypes.Text.HTML,
             handler = { request ->
                 val userId = request.path("userId").asString()
                 val docId = request.path("docId").asString()
