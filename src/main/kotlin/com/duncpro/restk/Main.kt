@@ -96,7 +96,7 @@ object CorsPolicies {
      * Creates a private CORS policy which grants permission to only whitelisted origins to use all resources and methods.
      * More restrictive policies can be created by implementing [CorsPolicy] directly.
      */
-    fun private(allowedHeaders: Set<String>, originWhitelist: Set<String>): CorsPolicy {
+    fun private(, originWhitelist: Set<String>, allowedHeaders: Set<String> = setOf("authorization")): CorsPolicy {
         val sanitizedOriginWhitelist = originWhitelist.asSequence()
             .map(String::lowercase).
             toSet()
