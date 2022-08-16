@@ -24,7 +24,7 @@ like Netty or Ktor.
 ### Define an Endpoint
 ```kotlin
 val PublishDocumentEndpoint = RestEndpoint(HttpMethod.POST, "/docs/{customerId}/docs/{docId}",
-    /* consumes = */ setOf("text/plain; charset=utf-8"), /* produces = */ setOf("text/html; charset-utf-8")) { request ->
+    /* consumes = */ setOf(ContentTypes.Text.PLAIN), /* produces = */ ContentTypes.Text.HTML) { request ->
     val customerId = request.path("customerId").asString()
     val docId = request.path("docId").asInt() /* throws RestException if not an integer */
     val token = request.query("authToken").asLong() /* throws RestException if query arg not provided or not long */
