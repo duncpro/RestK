@@ -47,6 +47,7 @@ fun httpServerOf(router: RestRouter<ContentEndpointGroup>, address: InetSocketAd
     httpServer.executor = Dispatchers.IO.asExecutor()
 
     httpServer.createContext("/") { exchange ->
+        @Suppress("ConvertTryFinallyToUseCall")
         try {
             runBlocking {
                 val response = try {
