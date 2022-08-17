@@ -119,6 +119,8 @@ $dokka.location:com.duncpro.restk/RestEndpoint/route/#/PointingToDeclaration/-r
 $dokka.location:com.duncpro.restk/RestException///PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-exception/index.html
 $dokka.location:com.duncpro.restk/RestException/RestException/#kotlin.Int#kotlin.Throwable?#kotlin.String?/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-exception/-rest-exception.html
 $dokka.location:com.duncpro.restk/RestException/statusCode/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-exception/status-code.html
+$dokka.location:com.duncpro.restk/RestRequest.Companion///PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-request/-companion/index.html
+$dokka.location:com.duncpro.restk/RestRequest.Companion/of/#kotlin.collections.Map[kotlin.String,kotlin.String]#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#com.duncpro.restk.RequestBody/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-request/-companion/of.html
 $dokka.location:com.duncpro.restk/RestRequest///PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-request/index.html
 $dokka.location:com.duncpro.restk/RestRequest/header/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-request/header.html
 $dokka.location:com.duncpro.restk/RestRequest/path/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-rest-request/path.html
