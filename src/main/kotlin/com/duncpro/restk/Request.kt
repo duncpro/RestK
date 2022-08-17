@@ -48,6 +48,7 @@ abstract class DelegateToFlowBody(override val contentLength: Long?): RequestBod
                 }
             })
             this.asFlow().collect(buffer::put)
+            buffer.flip()
             buffer
         } ?: ByteBuffer.wrap(asFlow().toCollection(ArrayList()).toByteArray())
     }
