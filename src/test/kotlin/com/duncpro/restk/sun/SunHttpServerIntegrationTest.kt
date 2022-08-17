@@ -36,12 +36,12 @@ class SunHttpServerIntegrationTest {
                 }
             })
 
-        val server = httpServerOf(createRouter(endpoints = setOf(GreetingEndpoint), corsPolicy = null), InetSocketAddress(8080))
+        val server = httpServerOf(createRouter(endpoints = setOf(GreetingEndpoint), corsPolicy = null), InetSocketAddress(8088))
         server.start()
         val client = HttpClient(CIO)
         runBlocking {
             val response = client.post {
-                url("http://localhost:8080/greeting?user=duncan")
+                url("http://localhost:8088/greeting?user=duncan")
                 header("content-type", "text/plain")
                 header("accept", "text/plain; charset=UTF-8")
                 setBody("Example")

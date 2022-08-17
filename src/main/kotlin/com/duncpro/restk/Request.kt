@@ -108,16 +108,19 @@ suspend fun RequestBodyReference.asString(): String {
     return String(data, contentType?.charset ?: Charsets.UTF_8)
 }
 
-class RestRequest internal constructor(
+data class RestRequest private constructor(
     val path: Map<String, String>,
     val query: Map<String, List<String>>,
-    header: Map<String, List<String>>, // Should be case-insensitive
+    val header: Map<String, List<String>>, // Should be case-insensitive
     internal val rawBody: RequestBody
 ) {
-    val header by lazy {
-        val map: SortedMap<String, List<String>> = TreeMap(String.CASE_INSENSITIVE_ORDER)
-        map.putAll(header)
-        return@lazy map
+
+    companion object {
+        fun of(path: Map<String, String>, query: Map<String, List<String>>, header: Map<String, List<String>>, rawBody: RequestBody): RestRequest {
+            val caselessHeader: SortedMap<String, List<String>> = TreeMap(String.CASE_INSENSITIVE_ORDER)
+            caselessHeader.putAll(header)
+            return RestRequest(path, query, caselessHeader, rawBody)
+        }
     }
 }
 
@@ -131,7 +134,6 @@ fun RestRequest.query(key: String): RestStringFieldValueReference
         = RestStringFieldValueReference(RestStringFieldType.QUERY, key, this.query[key]?.firstOrNull())
 
 val RestRequest.body: RequestBodyReference get() = RequestBodyReference(this.contentType(), this.rawBody)
-
 
 fun RestRequest.contentType(): ContentType? = header["Content-Type"]
     ?.firstOrNull { it.isNotBlank() }

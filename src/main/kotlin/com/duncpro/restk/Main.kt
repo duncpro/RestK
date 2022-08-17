@@ -192,16 +192,19 @@ suspend fun handleRequest(
 ): RestResponse {
     val endpointGroup = when (val result = router.route(method, path)) {
         is RestRouteResult.ResourceNotFound<ContentEndpointGroup> -> {
+            logger.info("Unable to process request because the requested resource does not exist: ${path}.")
             return RestResponse(404, emptyMap(), null)
         }
         is RestRouteResult.UnsupportedMethod<ContentEndpointGroup> -> {
+            logger.info("Unable to process request because the requested resource ($path) does not support method: ${method}.")
             return RestResponse(405, emptyMap(), null)
         }
         is RestRouteResult.RestRouteMatch<ContentEndpointGroup> -> result.methodEndpoint
         else -> throw AssertionError()
     }
 
-    val request = RestRequest(endpointGroup.position.route.extractVariablesMap(Path(path)), query, header, body)
+    val request = RestRequest.of(endpointGroup.position.route.extractVariablesMap(Path(path)), query, header, body)
+    logger.info("Inbound Request: $method $path: $request")
 
     val capableConsumerEndpoints = endpointGroup.likeEndpoints
         .filter { endpoint -> ContentTypes.isMatch(request.contentType(), endpoint.consumeContentType) }
@@ -222,7 +225,9 @@ suspend fun handleRequest(
     }
 
     return try {
-        return matchedEndpoint.handler(request)
+        val response = matchedEndpoint.handler(request)
+        logger.info("Outbound Response: $response")
+        return response
     } catch (e: RestException) {
         logger.info("An error occurred while processing request.", e)
         RestResponse(e.statusCode, emptyMap(), null)
