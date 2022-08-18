@@ -11,6 +11,7 @@ import java.io.IOException
 import java.net.InetSocketAddress
 import java.util.*
 import java.util.Collections.emptyList
+import kotlin.collections.HashMap
 
 private val logger = LoggerFactory.getLogger("com.duncpro.restk.SunHttpServerIntegrationKt")
 
@@ -64,7 +65,7 @@ fun httpServerOf(router: RestRouter<ContentEndpointGroup>, address: InetSocketAd
                     )
                 } catch (e: Exception) {
                     logger.error("Unhandled exception in request handler", e)
-                    RestResponse(500, emptyMap(), null)
+                    RestResponse(500, HashMap(), null)
                 }
 
                 exchange.responseHeaders.putAll(response.header)

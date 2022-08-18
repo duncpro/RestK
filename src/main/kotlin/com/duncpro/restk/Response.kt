@@ -8,7 +8,7 @@ import java.nio.charset.Charset
 
 data class RestResponse internal constructor(
     val statusCode: Int,
-    val header: Map<String, List<String>>,
+    val header: MutableMap<String, MutableList<String>>,
     val body: ResponseBodyContainer?
 )
 

@@ -15,7 +15,13 @@ import java.util.TreeMap
 
 private val logger: Logger = LoggerFactory.getLogger("com.duncpro.restk")
 
-class RestException(val statusCode: Int = 400, cause: Throwable? = null, message: String? = null): Exception(message, cause)
+class RestException(
+    val statusCode: Int = 400,
+    cause: Throwable? = null,
+    message: String? = null
+): Exception(message, cause) {
+    val attachedHeaders: SortedMap<String, MutableList<String>> = TreeMap(String.CASE_INSENSITIVE_ORDER)
+}
 
 
 typealias RequestHandler = suspend (RestRequest) -> RestResponse
@@ -147,12 +153,20 @@ private fun wrapEndpointWithCorsSupport(endpoint: RestEndpoint, corsPolicy: Cors
         val route = ParameterizedRoute.parse(endpoint.route)
         val permissions = corsPolicy(origin, route) { router.getEndpoint(route).orElseThrow(::IllegalStateException) }
         val permissionGranted = permissions.allowedMethods.contains(endpoint.method)
-        val response = endpoint.handler(request)
 
-        if (permissionGranted && origin != null) {
-            response.copy(header = response.header + Pair("Access-Control-Allow-Origin", listOf(origin)))
-        } else {
-            response
+        fun attachHeaders(map: MutableMap<String, MutableList<String>>) {
+            if (origin != null && permissionGranted) {
+                map.getOrPut("Access-Control-Allow-Origin", ::ArrayList).add(origin)
+            }
+        }
+
+        try {
+            val response = endpoint.handler(request)
+            attachHeaders(response.header)
+            return@RestEndpoint response
+        } catch (e: RestException) {
+            attachHeaders(e.attachedHeaders)
+            throw e
         }
     }
 }
@@ -193,11 +207,11 @@ suspend fun handleRequest(
     val endpointGroup = when (val result = router.route(method, path)) {
         is RestRouteResult.ResourceNotFound<ContentEndpointGroup> -> {
             logger.info("Unable to process request because the requested resource does not exist: ${path}.")
-            return RestResponse(404, emptyMap(), null)
+            return RestResponse(404, HashMap(), null)
         }
         is RestRouteResult.UnsupportedMethod<ContentEndpointGroup> -> {
             logger.info("Unable to process request because the requested resource ($path) does not support method: ${method}.")
-            return RestResponse(405, emptyMap(), null)
+            return RestResponse(405, HashMap(), null)
         }
         is RestRouteResult.RestRouteMatch<ContentEndpointGroup> -> result.methodEndpoint
         else -> throw AssertionError()
@@ -212,7 +226,7 @@ suspend fun handleRequest(
     if (capableConsumerEndpoints.isEmpty()) {
        logger.info("Unable to process request because the request payload contains an unsupported media type: " +
                "${request.contentType() ?: "No Content"}.")
-        return RestResponse(415, emptyMap(), null)
+        return RestResponse(415, HashMap(), null)
     }
 
     val accepts = request.accepts().map(QualifiableContentType::contentType).toSet()
@@ -221,7 +235,7 @@ suspend fun handleRequest(
 
     if (matchedEndpoint == null) {
         logger.info("Unable to process request because the accept header does not contain any supported media types.")
-        return RestResponse(406, emptyMap(), null)
+        return RestResponse(406, HashMap(), null)
     }
 
     return try {
@@ -230,6 +244,6 @@ suspend fun handleRequest(
         return response
     } catch (e: RestException) {
         logger.info("An error occurred while processing request.", e)
-        RestResponse(e.statusCode, emptyMap(), null)
+        RestResponse(e.statusCode, e.attachedHeaders, null)
     }
 }
