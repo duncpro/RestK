@@ -146,7 +146,7 @@ private fun wrapEndpointWithCorsSupport(endpoint: RestEndpoint, corsPolicy: Cors
         val origin = request.header["origin"]?.firstOrNull()
         val route = ParameterizedRoute.parse(endpoint.route)
         val permissions = corsPolicy(origin, route) { router.getEndpoint(route).orElseThrow(::IllegalStateException) }
-        val permissionGranted = permissions.allowedMethods.isNotEmpty()
+        val permissionGranted = permissions.allowedMethods.contains(endpoint.method)
         val response = endpoint.handler(request)
 
         if (permissionGranted && origin != null) {
