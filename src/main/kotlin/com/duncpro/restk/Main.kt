@@ -178,7 +178,7 @@ private fun wrapEndpointWithCorsSupport(endpoint: RestEndpoint, corsPolicy: Cors
 fun createRouter(endpoints: Iterable<RestEndpoint>, corsPolicy: CorsPolicy?): RestRouter<ContentEndpointGroup> {
     val router = RestRouter<ContentEndpointGroup>()
 
-    // Register implicit CORS preflight OPTIONS request endpoints.
+    // Create implicit CORS preflight OPTIONS request endpoints.
     val implicitCorsPreflightEndpoints = endpoints.asSequence()
         .map(RestEndpoint::route)
         .map(ParameterizedRoute::parse)
@@ -186,9 +186,11 @@ fun createRouter(endpoints: Iterable<RestEndpoint>, corsPolicy: CorsPolicy?): Re
         .mapNotNull { route -> corsPolicy?.let { createPreflightEndpoint(route, corsPolicy, router) } }
         .toList()
 
-    // Register all explicitly defined endpoints.
-    (endpoints union implicitCorsPreflightEndpoints)
-        .map { endpoint -> wrapEndpointWithCorsSupport(endpoint, corsPolicy, router) }
+    // Wrap explicitly defined endpoints with CORS support
+    val wrappedExplicitEndpoints = endpoints.map { endpoint -> wrapEndpointWithCorsSupport(endpoint, corsPolicy, router) }
+
+    // Register all endpoints
+    (wrappedExplicitEndpoints union implicitCorsPreflightEndpoints)
         .groupBy { EndpointPosition(it.method, ParameterizedRoute.parse(it.route)) }
         .map { (position, likeEndpoints) -> ContentEndpointGroup(position, likeEndpoints.toSet()) }
         .forEach { endpointGroup -> router.add(endpointGroup.position.method, endpointGroup.position.route, endpointGroup) }
