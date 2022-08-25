@@ -29,11 +29,19 @@ typealias RequestHandler = suspend (RestRequest) -> RestResponse
 
 class RestEndpoint constructor(
     val method: HttpMethod,
-    val route: String,
+    val route: ParameterizedRoute,
     val consumeContentType: Set<ContentType>,
     val produceContentType: ContentType?,
     val handler: RequestHandler
-)
+) {
+    constructor(
+        method: HttpMethod,
+        route: String,
+        consumeContentType: Set<ContentType>,
+        produceContentType: ContentType?,
+        handler: RequestHandler
+    ) : this(method, ParameterizedRoute.parse(route), consumeContentType, produceContentType, handler)
+}
 
 internal data class EndpointPosition internal constructor(val method: HttpMethod, val route: ParameterizedRoute)
 
@@ -121,8 +129,8 @@ object CorsPolicies {
     }
 }
 
-private fun createPreflightEndpoint(route: Route, corsPolicy: CorsPolicy, router: RestRouter<ContentEndpointGroup>) =
-    RestEndpoint(HttpMethod.OPTIONS, route.toString(), emptySet(), null) { preflightRequest ->
+private fun createPreflightEndpoint(route: ParameterizedRoute, corsPolicy: CorsPolicy, router: RestRouter<ContentEndpointGroup>) =
+    RestEndpoint(HttpMethod.OPTIONS, route, emptySet(), null) { preflightRequest ->
 
     val origin = preflightRequest.header["origin"]?.firstOrNull()
     val resourceIntrospector: RestResourceIntrospector = { router.getEndpoint(route).orElseThrow(::IllegalStateException) }
@@ -151,8 +159,7 @@ private fun wrapEndpointWithCorsSupport(endpoint: RestEndpoint, corsPolicy: Cors
 
     return RestEndpoint(endpoint.method, endpoint.route, endpoint.consumeContentType, endpoint.produceContentType) { request ->
         val origin = request.header["origin"]?.firstOrNull()
-        val route = ParameterizedRoute.parse(endpoint.route)
-        val permissions = corsPolicy(origin, route) { router.getEndpoint(route).orElseThrow(::IllegalStateException) }
+        val permissions = corsPolicy(origin, endpoint.route) { router.getEndpoint(endpoint.route).orElseThrow(::IllegalStateException) }
         val permissionGranted = permissions.allowedMethods.contains(endpoint.method)
 
         fun attachHeaders(map: MutableMap<String, MutableList<String>>) {
@@ -182,7 +189,6 @@ fun createRouter(endpoints: Iterable<RestEndpoint>, corsPolicy: CorsPolicy?): Re
     // Create implicit CORS preflight OPTIONS request endpoints.
     val implicitCorsPreflightEndpoints = endpoints.asSequence()
         .map(RestEndpoint::route)
-        .map(ParameterizedRoute::parse)
         .distinct()
         .mapNotNull { route -> corsPolicy?.let { createPreflightEndpoint(route, corsPolicy, router) } }
         .toList()
@@ -192,19 +198,9 @@ fun createRouter(endpoints: Iterable<RestEndpoint>, corsPolicy: CorsPolicy?): Re
 
     // Register all endpoints
     (wrappedExplicitEndpoints union implicitCorsPreflightEndpoints)
-        .groupBy { EndpointPosition(it.method, ParameterizedRoute.parse(it.route)) }
+        .groupBy { EndpointPosition(it.method, it.route) }
         .map { (position, likeEndpoints) -> ContentEndpointGroup(position, likeEndpoints.toSet()) }
-        .forEach { endpointGroup ->
-            try {
-                router.add(endpointGroup.position.method, endpointGroup.position.route, endpointGroup)
-            } catch (e: RouteConflictException) {
-                router.getAllEndpoints(Route.ROOT).forEach { println(it.route) }
-                println(router.getEndpoint(endpointGroup.position.route).isPresent)
-                println(endpointGroup.position.route)
-                e.printStackTrace()
-            }
-
-        }
+        .forEach { endpointGroup -> router.add(endpointGroup.position.method, endpointGroup.position.route, endpointGroup) }
 
     return router
 }
