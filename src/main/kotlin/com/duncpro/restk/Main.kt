@@ -1,6 +1,7 @@
 package com.duncpro.restk
 
 import com.duncpro.jroute.Path
+import com.duncpro.jroute.RouteConflictException
 import com.duncpro.jroute.rest.HttpMethod
 import com.duncpro.jroute.rest.RestResource
 import com.duncpro.jroute.rest.RestRouteResult
@@ -193,7 +194,17 @@ fun createRouter(endpoints: Iterable<RestEndpoint>, corsPolicy: CorsPolicy?): Re
     (wrappedExplicitEndpoints union implicitCorsPreflightEndpoints)
         .groupBy { EndpointPosition(it.method, ParameterizedRoute.parse(it.route)) }
         .map { (position, likeEndpoints) -> ContentEndpointGroup(position, likeEndpoints.toSet()) }
-        .forEach { endpointGroup -> router.add(endpointGroup.position.method, endpointGroup.position.route, endpointGroup) }
+        .forEach { endpointGroup ->
+            try {
+                router.add(endpointGroup.position.method, endpointGroup.position.route, endpointGroup)
+            } catch (e: RouteConflictException) {
+                router.getAllEndpoints(Route.ROOT).forEach { println(it.route) }
+                println(router.getEndpoint(endpointGroup.position.route).isPresent)
+                println(endpointGroup.position.route)
+                e.printStackTrace()
+            }
+
+        }
 
     return router
 }

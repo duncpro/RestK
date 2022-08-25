@@ -39,6 +39,16 @@ class SmokeTest {
             }
         )
 
+        val anotherEndpoint = RestEndpoint(
+            method = POST,
+            route = "/festivals/{festivalId}/something",
+            consumeContentType = setOf(ContentTypes.Text.PLAIN),
+            produceContentType = ContentTypes.Text.HTML,
+            handler = { request ->
+                responseOf { statusCode = 200 }
+            }
+        )
+
         val response = handleRequest(
             method = POST,
             path = "/users/wasd/docs/readme.md",
@@ -50,8 +60,8 @@ class SmokeTest {
             ),
             body = MemoryRequestBody(ByteBuffer.wrap("Hello World!".toByteArray())),
             router = createRouter(
-                endpoints = setOf(endpoint),
-                corsPolicy = null
+                endpoints = setOf(endpoint, anotherEndpoint),
+                corsPolicy = CorsPolicies.public()
             )
         )
 
