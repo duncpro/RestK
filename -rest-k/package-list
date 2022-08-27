@@ -30,6 +30,7 @@ $dokka.location:com.duncpro.restk//path/com.duncpro.restk.RestRequest#kotlin.Str
 $dokka.location:com.duncpro.restk//pipeFlowToOutputStream/#kotlinx.coroutines.flow.Flow[kotlin.Byte]#java.io.OutputStream/PointingToDeclaration/-rest-k/com.duncpro.restk/pipe-flow-to-output-stream.html
 $dokka.location:com.duncpro.restk//query/com.duncpro.restk.RestRequest#kotlin.String/PointingToDeclaration/-rest-k/com.duncpro.restk/query.html
 $dokka.location:com.duncpro.restk//responseOf/#kotlin.Function1[com.duncpro.restk.ResponseBuilderContext,kotlin.Unit]/PointingToDeclaration/-rest-k/com.duncpro.restk/response-of.html
+$dokka.location:com.duncpro.restk//wrapEndpoint/#com.duncpro.restk.RestEndpoint#kotlin.coroutines.SuspendFunction1[com.duncpro.restk.RestRequest,com.duncpro.restk.RestResponse]/PointingToDeclaration/-rest-k/com.duncpro.restk/wrap-endpoint.html
 $dokka.location:com.duncpro.restk/AsyncRequestBody///PointingToDeclaration/-rest-k/com.duncpro.restk/-async-request-body/index.html
 $dokka.location:com.duncpro.restk/AsyncRequestBody/AsyncRequestBody/#kotlinx.coroutines.channels.Channel[kotlin.Byte]#kotlin.Long?/PointingToDeclaration/-rest-k/com.duncpro.restk/-async-request-body/-async-request-body.html
 $dokka.location:com.duncpro.restk/AsyncRequestBody/asFlow/#/PointingToDeclaration/-rest-k/com.duncpro.restk/-async-request-body/as-flow.html
