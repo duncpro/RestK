@@ -157,7 +157,7 @@ private fun createPreflightEndpoint(route: ParameterizedRoute, corsPolicy: CorsP
 private fun wrapEndpointWithCorsSupport(endpoint: RestEndpoint, corsPolicy: CorsPolicy?, router: RestRouter<ContentEndpointGroup>): RestEndpoint {
     if (corsPolicy == null) return endpoint
 
-    return RestEndpoint(endpoint.method, endpoint.route, endpoint.consumeContentType, endpoint.produceContentType) { request ->
+    return wrapEndpoint(endpoint) { request ->
         val origin = request.header["origin"]?.firstOrNull()
         val permissions = corsPolicy(origin, endpoint.route) { router.getEndpoint(endpoint.route).orElseThrow(::IllegalStateException) }
         val permissionGranted = permissions.allowedMethods.contains(endpoint.method)
@@ -171,7 +171,7 @@ private fun wrapEndpointWithCorsSupport(endpoint: RestEndpoint, corsPolicy: Cors
         try {
             val response = endpoint.handler(request)
             attachHeaders(response.header)
-            return@RestEndpoint response
+            return@wrapEndpoint response
         } catch (e: RestException) {
             attachHeaders(e.attachedHeaders)
             throw e
@@ -254,5 +254,11 @@ suspend fun handleRequest(
     } catch (e: RestException) {
         logger.info("An error occurred while processing request.", e)
         RestResponse(e.statusCode, e.attachedHeaders, null)
+    }
+}
+
+fun wrapEndpoint(original: RestEndpoint, by: RequestHandler): RestEndpoint {
+    return RestEndpoint(original.method, original.route, original.consumeContentType, original.produceContentType) { request ->
+        by(request)
     }
 }
