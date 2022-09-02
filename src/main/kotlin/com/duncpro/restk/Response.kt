@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import java.nio.charset.Charset
 
-data class RestResponse internal constructor(
+data class RestResponse constructor(
     val statusCode: Int,
     val header: MutableMap<String, MutableList<String>>,
     val body: ResponseBodyContainer?
@@ -31,7 +31,7 @@ class FullResponseBodyContainer(data: Flow<Byte>, val contentLength: Long): Resp
  */
 class AutoChunkedResponseBodyContainer(data: Flow<Byte>): ResponseBodyContainer(data)
 
-class ResponseBuilderContext internal constructor(
+class ResponseBuilderContext constructor(
     var statusCode: Int = 200,
     var header: MutableMap<String, MutableList<String>> = mutableMapOf(),
     var body: ResponseBodyContainer? = null
@@ -58,7 +58,7 @@ fun ResponseBuilderContext.header(key: String, value: Double) = this.header(key,
 fun ResponseBuilderContext.contentType(contentType: ContentType) = this.header("Content-Type", contentType.toString())
 
 
-fun responseOf(builder: ResponseBuilderContext.() -> Unit): RestResponse {
+inline fun responseOf(builder: ResponseBuilderContext.() -> Unit): RestResponse {
     val context = ResponseBuilderContext()
     builder(context)
     return RestResponse(context.statusCode, context.header, context.body)
