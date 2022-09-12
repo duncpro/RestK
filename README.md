@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/duncpro/RestK/branch/master/graph/badge.svg?token=HEH1Q38EOD)](https://codecov.io/gh/duncpro/RestK)
 
 
-An extensible, typesafe, reflection-free, non-blocking, serverside framework for writing compliant REST APIs.
+An functional, reflection-free serverside REST library for Kotlin
 
 The entire framework fits into a single reasonably sized file.
 You can get started with RestK in five minutes and master it in thirty.
